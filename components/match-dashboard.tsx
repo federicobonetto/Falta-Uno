@@ -262,6 +262,9 @@ function ProfileEditorDialog({ profile, open, onOpenChange, onSaved }: {
         body: JSON.stringify({
           firstName: data.get("firstName"), lastName: data.get("lastName"), phone: data.get("phone"),
           category, playingPosition, gender, location: data.get("location"),
+          latitude: profile.latitude ?? null, longitude: profile.longitude ?? null,
+          searchMode: profile.searchMode ?? "radius", searchRadiusKm: profile.searchRadiusKm ?? 20,
+          preferredPlace: profile.preferredPlace ?? null,
         }),
       }));
       await onSaved(result.player); onOpenChange(false); toast.success("Perfil actualizado.");
