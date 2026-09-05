@@ -4,7 +4,7 @@ import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "re
 import Link from "next/link";
 import {
   ArrowLeft, CalendarDays, Check, ChevronDown, Clock3, Eye, EyeOff, Loader2,
-  Copy, KeyRound, LocateFixed, LockKeyhole, LogOut, MapPin, Pencil, Plus, Trash2,
+  Copy, KeyRound, LockKeyhole, LogOut, MapPin, Pencil, Plus, Trash2,
   ShieldCheck, Target, UserCheck, UsersRound, X,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -244,12 +244,6 @@ function ProfileEditorDialog({ profile, open, onOpenChange, onSaved }: {
   const [category, setCategory] = useState(profile.category);
   const [playingPosition, setPlayingPosition] = useState<"drive" | "reves">(profile.playingPosition ?? "drive");
   const [gender, setGender] = useState<"dama" | "caballero">(profile.gender ?? "caballero");
-  const [searchMode, setSearchMode] = useState<"radius" | "place">(profile.searchMode ?? "radius");
-  const [searchRadiusKm, setSearchRadiusKm] = useState(String(profile.searchRadiusKm ?? 20));
-  const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(
-    profile.latitude != null && profile.longitude != null ? { latitude: profile.latitude, longitude: profile.longitude } : null
-  );
-  const [locating, setLocating] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -257,20 +251,7 @@ function ProfileEditorDialog({ profile, open, onOpenChange, onSaved }: {
     setCategory(profile.category);
     setPlayingPosition(profile.playingPosition ?? "drive");
     setGender(profile.gender ?? "caballero");
-    setSearchMode(profile.searchMode ?? "radius");
-    setSearchRadiusKm(String(profile.searchRadiusKm ?? 20));
-    setCoordinates(profile.latitude != null && profile.longitude != null ? { latitude: profile.latitude, longitude: profile.longitude } : null);
   }, [open, profile]);
-
-  function locate() {
-    if (!navigator.geolocation) { toast.error("Tu dispositivo no permite obtener la ubicación."); return; }
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => { setCoordinates({ latitude: coords.latitude, longitude: coords.longitude }); setLocating(false); toast.success("Ubicación actual guardada."); },
-      () => { setLocating(false); toast.error("No pudimos acceder a tu ubicación."); },
-      { enableHighAccuracy: false, timeout: 10000 }
-    );
-  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setSubmitting(true);
@@ -280,9 +261,7 @@ function ProfileEditorDialog({ profile, open, onOpenChange, onSaved }: {
         method: "PATCH", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           firstName: data.get("firstName"), lastName: data.get("lastName"), phone: data.get("phone"),
-          category, playingPosition, gender, location: data.get("location"), latitude: coordinates?.latitude ?? null,
-          longitude: coordinates?.longitude ?? null, searchMode, searchRadiusKm: Number(searchRadiusKm),
-          preferredPlace: searchMode === "place" ? data.get("preferredPlace") : null,
+          category, playingPosition, gender, location: data.get("location"),
         }),
       }));
       await onSaved(result.player); onOpenChange(false); toast.success("Perfil actualizado.");
@@ -292,7 +271,7 @@ function ProfileEditorDialog({ profile, open, onOpenChange, onSaved }: {
 
   return <Dialog open={open} onOpenChange={onOpenChange}>
     <DialogContent className="profile-dialog">
-      <DialogHeader><DialogTitle>Editar mi perfil</DialogTitle><DialogDescription>Actualizá tus datos y decidí qué partidos querés ver.</DialogDescription></DialogHeader>
+      <DialogHeader><DialogTitle>Editar mi perfil</DialogTitle><DialogDescription>Actualizá tus datos de jugador.</DialogDescription></DialogHeader>
       <form onSubmit={submit}>
         <div className="profile-form-grid">
           <label><span>Nombre</span><Input name="firstName" defaultValue={profile.firstName} minLength={2} required /></label>
@@ -302,9 +281,6 @@ function ProfileEditorDialog({ profile, open, onOpenChange, onSaved }: {
           <label><span>Género</span><Select value={gender} onValueChange={(value) => setGender((value ?? "caballero") as "dama" | "caballero")}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="caballero">Masculino</SelectItem><SelectItem value="dama">Femenino</SelectItem></SelectContent></Select></label>
           <label><span>Juego</span><Select value={playingPosition} onValueChange={(value) => setPlayingPosition((value ?? "drive") as "drive" | "reves")}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="reves">Revés</SelectItem><SelectItem value="drive">Drive</SelectItem></SelectContent></Select></label>
           <label className="wide"><span>Ciudad o zona</span><Input name="location" defaultValue={profile.location ?? ""} placeholder="Ej. Olavarría" minLength={2} required /></label>
-          <div className="wide location-inline"><Button type="button" variant="outline" onClick={locate} disabled={locating}>{locating ? <Loader2 className="spin" /> : coordinates ? <MapPin /> : <LocateFixed />}{locating ? "Ubicando..." : coordinates ? "Ubicación guardada" : "Usar ubicación actual"}</Button><small>Podés usar sólo la ciudad o permitir una búsqueda más precisa.</small></div>
-          <label className="wide"><span>Buscar partidos</span><Select value={searchMode} onValueChange={(value) => setSearchMode((value ?? "radius") as "radius" | "place")}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="radius">Dentro de una distancia</SelectItem><SelectItem value="place">En un club o lugar particular</SelectItem></SelectContent></Select></label>
-          {searchMode === "radius" ? <label className="wide"><span>Distancia máxima</span><Select value={searchRadiusKm} onValueChange={(value) => setSearchRadiusKm(value ?? "20")}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{[5, 10, 20, 30, 50, 100].map((radius) => <SelectItem key={radius} value={String(radius)}>Hasta {radius} km</SelectItem>)}</SelectContent></Select></label> : <label className="wide"><span>Club o lugar preferido</span><Input name="preferredPlace" defaultValue={profile.preferredPlace ?? ""} placeholder="Ej. La Cancha Padel" minLength={2} required /></label>}
         </div>
         <DialogFooter><Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button><Button type="submit" disabled={submitting}>{submitting ? <Loader2 className="spin" /> : <Check />}{submitting ? "Guardando..." : "Guardar cambios"}</Button></DialogFooter>
       </form>
@@ -444,22 +420,10 @@ function CreateMatchForm({ profile, players, onCreated }: { profile: Player; pla
   const [category, setCategory] = useState(profile.category);
   const [selected, setSelected] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [locating, setLocating] = useState(false);
 
   function togglePlayer(id: string, checked: boolean) {
     if (checked && selected.length >= 3) { toast.info("Podés invitar hasta tres jugadores."); return; }
     setSelected((current) => checked ? [...current, id] : current.filter((playerId) => playerId !== id));
-  }
-
-  function locateMatch() {
-    if (!navigator.geolocation) { toast.error("Tu dispositivo no permite obtener la ubicación."); return; }
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => { setCoordinates({ latitude: coords.latitude, longitude: coords.longitude }); setLocating(false); toast.success("Ubicación del partido guardada."); },
-      () => { setLocating(false); toast.error("No pudimos acceder a tu ubicación."); },
-      { enableHighAccuracy: false, timeout: 10000 }
-    );
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -478,10 +442,10 @@ function CreateMatchForm({ profile, players, onCreated }: { profile: Player; pla
     try {
       const result = await readJson<{ match: { id: number } }>(await fetch("/api/matches", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: data.get("title"), club: data.get("club"), location: data.get("location"), latitude: coordinates?.latitude ?? null, longitude: coordinates?.longitude ?? null, matchDate: data.get("matchDate"), matchTime: data.get("matchTime"), category, visibility, format, privatePassword: visibility === "private" ? data.get("privatePassword") : undefined, invitedPlayerIds: visibility === "private" ? selected : [] }),
+        body: JSON.stringify({ title: data.get("title"), club: data.get("club"), location: data.get("location"), latitude: null, longitude: null, matchDate: data.get("matchDate"), matchTime: data.get("matchTime"), category, visibility, format, privatePassword: visibility === "private" ? data.get("privatePassword") : undefined, invitedPlayerIds: visibility === "private" ? selected : [] }),
       }));
       toast.success(visibility === "open" ? "Partido abierto publicado." : `Partido privado #${result.match.id} creado. Compartí el enlace y la contraseña.`);
-      form.reset(); setSelected([]); setVisibility("open"); setFormat("standard"); setCategory(profile.category); setCoordinates(null); await onCreated();
+      form.reset(); setSelected([]); setVisibility("open"); setFormat("standard"); setCategory(profile.category); await onCreated();
     } catch (error) { toast.error(error instanceof Error ? error.message : "No pudimos crear el partido."); }
     finally { setSubmitting(false); }
   }
@@ -507,8 +471,7 @@ function CreateMatchForm({ profile, players, onCreated }: { profile: Player; pla
           <label><span>Fecha</span><Input name="matchDate" type="date" min={new Date().toISOString().slice(0, 10)} required /></label>
           <label><span>Hora</span><Input name="matchTime" type="time" required /></label>
           <label className="wide"><span>Ciudad o zona</span><Input name="location" defaultValue={profile.location ?? ""} placeholder="Ej. Olavarría" required /></label>
-          <div className={`wide location-action ${coordinates ? "located" : ""}`}><span className="location-action-icon">{coordinates ? <MapPin /> : <LocateFixed />}</span><span><strong>{coordinates ? "Ubicación detectada" : "Encontrá canchas cercanas"}</strong><small>{coordinates ? `Buscaremos dentro de ${profile.searchRadiusKm ?? 20} km.` : "Permití el acceso para ver las canchas disponibles en tu rango."}</small></span><Button type="button" variant="outline" onClick={locateMatch} disabled={locating}>{locating ? <Loader2 className="spin" /> : coordinates ? "Actualizar" : "Usar mi ubicación"}</Button></div>
-          <label className="wide"><span>Club o cancha</span><NearbyCourtSelect latitude={coordinates?.latitude ?? null} longitude={coordinates?.longitude ?? null} radiusKm={profile.searchRadiusKm ?? 20} /></label>
+          <label className="wide"><span>Complejo de pádel</span><NearbyCourtSelect latitude={null} longitude={null} radiusKm={20} /></label>
           <label className="wide"><span>Categoría</span><Select value={category} onValueChange={(value) => { setCategory(value ?? profile.category); setSelected([]); }}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{categories.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></label>
           {visibility === "private" && <label className="wide private-password-field"><span>Contraseña del partido</span><Input name="privatePassword" type="password" autoComplete="new-password" placeholder="Creá una contraseña para compartir" minLength={4} maxLength={40} required /><small>La contraseña no se muestra públicamente. Guardala para enviársela a tus compañeros.</small></label>}
         </div>

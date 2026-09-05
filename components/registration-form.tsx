@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { Camera, CheckCircle2, Loader2, LocateFixed, LockKeyhole, MapPin, UserPlus } from "lucide-react";
+import { Camera, CheckCircle2, Loader2, LockKeyhole, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,10 +12,6 @@ export function RegistrationForm({ signedIn = false }: { signedIn?: boolean }) {
   const [category, setCategory] = useState("");
   const [playingPosition, setPlayingPosition] = useState<"drive" | "reves">("drive");
   const [gender, setGender] = useState<"dama" | "caballero">("caballero");
-  const [searchMode, setSearchMode] = useState<"radius" | "place">("radius");
-  const [searchRadiusKm, setSearchRadiusKm] = useState("20");
-  const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [locating, setLocating] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
   const [playerName, setPlayerName] = useState("");
@@ -26,29 +22,6 @@ export function RegistrationForm({ signedIn = false }: { signedIn?: boolean }) {
     const id = Number(new URLSearchParams(window.location.search).get("join"));
     if (Number.isInteger(id) && id > 0) setPendingJoinId(id);
   }, []);
-
-  function useCurrentLocation() {
-    if (!navigator.geolocation) {
-      setStatus("error");
-      setMessage("Tu dispositivo no permite obtener la ubicación. Podés escribir tu ciudad manualmente.");
-      return;
-    }
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        setCoordinates({ latitude: coords.latitude, longitude: coords.longitude });
-        setLocating(false);
-        setStatus("idle");
-        setMessage("");
-      },
-      () => {
-        setLocating(false);
-        setStatus("error");
-        setMessage("No pudimos acceder a tu ubicación. Podés escribir tu ciudad manualmente.");
-      },
-      { enableHighAccuracy: false, timeout: 10000 }
-    );
-  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -72,11 +45,11 @@ export function RegistrationForm({ signedIn = false }: { signedIn?: boolean }) {
       playingPosition,
       gender,
       location: String(data.get("location") ?? ""),
-      latitude: coordinates?.latitude ?? null,
-      longitude: coordinates?.longitude ?? null,
-      searchMode,
-      searchRadiusKm: Number(searchRadiusKm),
-      preferredPlace: searchMode === "place" ? String(data.get("preferredPlace") ?? "") : null,
+      latitude: null,
+      longitude: null,
+      searchMode: "radius",
+      searchRadiusKm: 20,
+      preferredPlace: null,
       avatarDataUrl,
     };
 
@@ -94,9 +67,6 @@ export function RegistrationForm({ signedIn = false }: { signedIn?: boolean }) {
       setCategory("");
       setPlayingPosition("drive");
       setGender("caballero");
-      setSearchMode("radius");
-      setSearchRadiusKm("20");
-      setCoordinates(null);
       setAvatarDataUrl(null);
     } catch (error) {
       setStatus("error");
@@ -152,28 +122,7 @@ export function RegistrationForm({ signedIn = false }: { signedIn?: boolean }) {
         <fieldset><legend>Juego</legend><RadioGroup value={playingPosition} onValueChange={(value) => setPlayingPosition(value as "drive" | "reves")} className="compact-radio">{(["reves", "drive"] as const).map((position) => <label key={position} className={playingPosition === position ? "selected" : ""}><RadioGroupItem value={position} /> {positionLabel(position)}</label>)}</RadioGroup></fieldset>
       </div>
       <label><span>Teléfono</span><Input name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="Ej. 2284 123456" minLength={8} required /></label>
-      <div className="location-field">
-        <label><span>Ciudad o zona</span><Input name="location" autoComplete="address-level2" placeholder="Ej. Olavarría" minLength={2} required /></label>
-        <Button type="button" variant="outline" className="location-button" onClick={useCurrentLocation} disabled={locating}>
-          {locating ? <Loader2 className="spin" /> : coordinates ? <MapPin /> : <LocateFixed />}
-          {locating ? "Ubicando..." : coordinates ? "Ubicación guardada" : "Usar ubicación actual"}
-        </Button>
-        <small>La ciudad ayuda cuando no compartís la ubicación precisa.</small>
-      </div>
-      <label>
-        <span>¿Dónde querés buscar partidos?</span>
-        <Select value={searchMode} onValueChange={(value) => setSearchMode((value ?? "radius") as "radius" | "place")}>
-          <SelectTrigger className="category-select"><SelectValue /></SelectTrigger>
-          <SelectContent><SelectItem value="radius">Dentro de una distancia</SelectItem><SelectItem value="place">En un club o lugar particular</SelectItem></SelectContent>
-        </Select>
-      </label>
-      {searchMode === "radius" ? <label>
-        <span>Distancia máxima</span>
-        <Select value={searchRadiusKm} onValueChange={(value) => setSearchRadiusKm(value ?? "20")}>
-          <SelectTrigger className="category-select"><SelectValue /></SelectTrigger>
-          <SelectContent>{[5, 10, 20, 30, 50, 100].map((radius) => <SelectItem key={radius} value={String(radius)}>Hasta {radius} km</SelectItem>)}</SelectContent>
-        </Select>
-      </label> : <label><span>Club o lugar preferido</span><Input name="preferredPlace" placeholder="Ej. La Cancha Padel" minLength={2} required /></label>}
+      <label><span>Ciudad</span><Input name="location" autoComplete="address-level2" placeholder="Ej. Olavarría" minLength={2} required /></label>
       {status === "error" && <p className="form-error" role="alert">{message}</p>}
       <Button className="register-submit" type="submit" disabled={status === "loading"}>
         {status === "loading" ? <Loader2 className="spin" aria-hidden="true" /> : <UserPlus aria-hidden="true" />}

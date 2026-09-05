@@ -1,46 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Loader2, MapPin } from "lucide-react";
+import { useMemo, useState } from "react";
+import { ExternalLink, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-type Court = { id: string; name: string; distanceKm: number };
+import { OLAVARRIA_COURTS } from "@/lib/courts";
 
 export function NearbyCourtSelect({ latitude, longitude, radiusKm, name = "club", required = true, defaultValue = "" }: {
   latitude: number | null; longitude: number | null; radiusKm: number; name?: string; required?: boolean; defaultValue?: string;
 }) {
-  const [courts, setCourts] = useState<Court[]>([]);
   const [selected, setSelected] = useState(defaultValue);
-  const [manual, setManual] = useState(!latitude || !longitude);
-  const [loading, setLoading] = useState(false);
-  const [notice, setNotice] = useState("");
+  const [manual, setManual] = useState(false);
+  const court = useMemo(() => OLAVARRIA_COURTS.find((item) => item.name === selected), [selected]);
+  const mapUrl = court ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${court.name}, ${court.address ?? ""}, Olavarría, Buenos Aires`)}` : "";
 
-  useEffect(() => {
-    if (latitude == null || longitude == null) { setManual(true); setCourts([]); return; }
-    const controller = new AbortController();
-    setLoading(true); setNotice(""); setManual(false);
-    fetch(`/api/courts?lat=${latitude}&lon=${longitude}&radius=${radiusKm}`, { signal: controller.signal })
-      .then(async (response) => {
-        const result = await response.json() as { courts?: Court[]; error?: string };
-        if (!response.ok) throw new Error(result.error);
-        setCourts(result.courts ?? []);
-        if (!result.courts?.length) { setManual(true); setNotice("No encontramos canchas registradas en ese rango. Escribí el club manualmente."); }
-      })
-      .catch((error) => { if (error instanceof DOMException && error.name === "AbortError") return; setManual(true); setNotice(error instanceof Error ? error.message : "No pudimos cargar las canchas cercanas."); })
-      .finally(() => setLoading(false));
-    return () => controller.abort();
-  }, [latitude, longitude, radiusKm]);
+  // Se conservan los parámetros para mantener compatibilidad con formularios
+  // ya publicados, aunque el listado ya no depende de la geolocalización.
+  void latitude; void longitude; void radiusKm;
 
   return <div className="nearby-court-field">
-    {loading ? <div className="court-loading"><Loader2 className="spin" /> Buscando canchas dentro de {radiusKm} km…</div> : !manual && courts.length > 0 ? <>
+    {!manual ? <>
       <Select value={selected} onValueChange={(value) => setSelected(value ?? "")}>
-        <SelectTrigger><SelectValue placeholder="Elegí una cancha cercana" /></SelectTrigger>
-        <SelectContent>{courts.map((court) => <SelectItem key={court.id} value={court.name}>{court.name} · {court.distanceKm} km</SelectItem>)}</SelectContent>
+        <SelectTrigger><SelectValue placeholder="Elegí un complejo de Olavarría" /></SelectTrigger>
+        <SelectContent>{OLAVARRIA_COURTS.map((item) => <SelectItem key={item.id} value={item.name}>{item.name}{item.address ? ` · ${item.address}` : ""}</SelectItem>)}</SelectContent>
       </Select>
-      <input type="hidden" name={name} value={selected} />
-      <button type="button" className="manual-court-toggle" onClick={() => { setManual(true); setSelected(""); }}>No está en la lista</button>
-    </> : <Input name={name} defaultValue={defaultValue} placeholder="Escribí el nombre del club" minLength={2} required={required} />}
-    {notice && <small className="court-notice"><MapPin /> {notice}</small>}
+      <input type="hidden" name={name} value={selected} required={required} />
+      {court && <div className="court-selection-info"><small><MapPin /> {court.address ?? "Olavarría"}</small><a href={mapUrl} target="_blank" rel="noreferrer">Ver en Google Maps <ExternalLink /></a></div>}
+      <button type="button" className="manual-court-toggle" onClick={() => { setManual(true); setSelected(""); }}>¿No aparece? Escribir otro complejo</button>
+    </> : <>
+      <Input name={name} defaultValue={defaultValue} placeholder="Escribí el nombre del complejo" minLength={2} required={required} />
+      <button type="button" className="manual-court-toggle" onClick={() => setManual(false)}>Volver al listado de complejos</button>
+    </>}
   </div>;
 }
