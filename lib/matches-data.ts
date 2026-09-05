@@ -1,5 +1,5 @@
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
-import { matchFitsPreference } from "@/lib/location-matching";
+
 import type { CurrentPlayer } from "@/lib/current-player";
 
 export async function loadMatches(viewer: CurrentPlayer | null, publicOnly = false) {
@@ -39,7 +39,6 @@ export async function loadMatches(viewer: CurrentPlayer | null, publicOnly = fal
     if (!viewer) return publicOnly;
     const related = match.creatorPlayerId === viewer.id || Boolean(match.viewerStatus);
     if (!publicOnly && match.visibility !== "open" && !related) return false;
-    if (related) return true;
-    return matchFitsPreference(viewer, match);
+    return true;
   }).filter((match) => !publicOnly || match.confirmedCount < match.maxPlayers).slice(0, publicOnly ? 6 : 100);
 }
