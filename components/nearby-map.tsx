@@ -24,6 +24,7 @@ export function NearbyMap({ signedIn = false }: { signedIn?: boolean }) {
   const [loading, setLoading] = useState(true);
   const [locating, setLocating] = useState(false);
   const [picking, setPicking] = useState(false);
+  const [resultsTab, setResultsTab] = useState<"courts" | "matches">("courts");
   const [notice, setNotice] = useState("Mostrando Olavarría. Podés usar tu ubicación o marcar otro punto.");
 
   const loadData = useCallback(async (point: Point, distance: number) => {
@@ -106,14 +107,17 @@ export function NearbyMap({ signedIn = false }: { signedIn?: boolean }) {
         </div>
         <div className="range-control"><label htmlFor="nearby-radius"><span><SlidersHorizontal /> Radio de búsqueda</span><strong>{radius} km</strong></label><input id="nearby-radius" type="range" min="2" max="50" step="1" value={radius} onChange={(event) => setRadius(Number(event.target.value))} /><div><small>2 km</small><small>50 km</small></div></div>
         <p className="map-privacy"><Navigation /> {notice}</p>
-        <div className="map-results-heading"><div><strong>{loading ? "—" : nearbyMatches.length}</strong><span>partidos activos</span></div><small>{courts.length} canchas encontradas</small></div>
-        <div className="nearby-results" aria-live="polite">
+        <div className="map-result-tabs" role="tablist" aria-label="Resultados del mapa">
+          <button type="button" role="tab" aria-selected={resultsTab === "courts"} className={resultsTab === "courts" ? "active" : ""} onClick={() => setResultsTab("courts")}><strong>{loading ? "—" : courts.length}</strong><span>Canchas</span></button>
+          <button type="button" role="tab" aria-selected={resultsTab === "matches"} className={resultsTab === "matches" ? "active" : ""} onClick={() => setResultsTab("matches")}><strong>{loading ? "—" : nearbyMatches.length}</strong><span>Partidos</span></button>
+        </div>
+        {resultsTab === "matches" && <div className="nearby-results compact-results" role="tabpanel" aria-live="polite">
           {loading && <div className="map-state"><Loader2 className="spin" /> Buscando cerca...</div>}
           {!loading && nearbyMatches.map((match) => <article key={match.id} className="nearby-match-card"><span className="nearby-match-pin"><MapPin /></span><div><strong>{match.title}</strong><small>{match.club} · {match.distanceKm.toFixed(1)} km</small><span>{match.matchDate} · {match.matchTime} · {match.category}</span></div><a href={signedIn ? `/partidos?join=${match.id}` : `/login?returnTo=${encodeURIComponent(`/partidos?join=${match.id}`)}`} target="_top" aria-label={`Ver ${match.title}`}><ArrowRight /></a></article>)}
           {!loading && nearbyMatches.length === 0 && <div className="map-empty"><MapPin /><strong>No hay partidos activos en este radio</strong><span>Probá ampliando la distancia o publicá un lugar libre.</span><a href={signedIn ? "/partidos?tab=create" : "/login?returnTo=%2Fpartidos%3Ftab%3Dcreate"} target="_top">Crear partido</a></div>}
-        </div>
-        {!loading && courts.length > 0 && <div className="court-results-block">
-          <div className="court-results-title"><strong>Todas las canchas</strong><span>{courts.length} en este radio</span></div>
+        </div>}
+        {resultsTab === "courts" && <div className="court-results-block compact-results" role="tabpanel" aria-live="polite">
+          {loading && <div className="map-state"><Loader2 className="spin" /> Buscando canchas...</div>}
           <div className="court-map-list">
             {courts.map((court, index) => <button type="button" key={court.id} onClick={() => focusCourt(court)}>
               <b>{String(index + 1).padStart(2, "0")}</b><span><strong>{court.name}</strong><small>{court.address || "Olavarría"} · {court.distanceKm.toFixed(1)} km</small></span><Navigation />
