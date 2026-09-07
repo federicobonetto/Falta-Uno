@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { OLAVARRIA_COURTS } from "@/lib/courts";
 
 const querySchema = z.object({
   lat: z.coerce.number().min(-90).max(90),
@@ -21,6 +22,16 @@ export async function GET(request: Request) {
 
   const { lat, lon, radius } = parsed.data;
   const meters = radius * 1000;
+  const curatedCourts = OLAVARRIA_COURTS.flatMap((court) => {
+    if (court.latitude == null || court.longitude == null) return [];
+    const courtDistance = distanceKm(lat, lon, court.latitude, court.longitude);
+    if (courtDistance > radius) return [];
+    return [{
+      id: court.id, name: court.name, address: court.address ?? "",
+      latitude: court.latitude, longitude: court.longitude,
+      rating: court.rating, distanceKm: courtDistance,
+    }];
+  });
   const query = `[out:json][timeout:15];(
     nwr(around:${meters},${lat},${lon})["sport"="padel"];
     nwr(around:${meters},${lat},${lon})["leisure"="pitch"]["sport"~"padel|paddle",i];
@@ -36,13 +47,13 @@ export async function GET(request: Request) {
     });
     if (!response.ok) throw new Error("court-provider-unavailable");
     const data = await response.json() as { elements?: OverpassElement[] };
-    const seen = new Set<string>();
-    const courts = (data.elements ?? []).flatMap((item) => {
+    const seen = new Set(curatedCourts.map((court) => normalizeName(court.name)));
+    const discoveredCourts = (data.elements ?? []).flatMap((item) => {
       const name = item.tags?.name?.trim();
       const courtLat = item.lat ?? item.center?.lat;
       const courtLon = item.lon ?? item.center?.lon;
       if (!name || courtLat == null || courtLon == null) return [];
-      const key = name.toLocaleLowerCase("es");
+      const key = normalizeName(name);
       if (seen.has(key)) return [];
       seen.add(key);
       const address = [item.tags?.["addr:street"], item.tags?.["addr:housenumber"]].filter(Boolean).join(" ");
@@ -51,11 +62,16 @@ export async function GET(request: Request) {
         latitude: courtLat, longitude: courtLon,
         distanceKm: distanceKm(lat, lon, courtLat, courtLon),
       }];
-    }).sort((a, b) => a.distanceKm - b.distanceKm);
+    });
+    const courts = [...curatedCourts, ...discoveredCourts].sort((a, b) => a.distanceKm - b.distanceKm);
     return Response.json({ courts });
   } catch {
-    return Response.json({ error: "No pudimos consultar las canchas cercanas. Podés escribir el club manualmente." }, { status: 503 });
+    return Response.json({ courts: curatedCourts, source: "curated" });
   }
+}
+
+function normalizeName(value: string) {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es").replace(/padel|club|canchas|de|el|la/g, "").replace(/\s+/g, " ").trim();
 }
 
 function distanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
