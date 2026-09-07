@@ -23,7 +23,9 @@ export async function GET(request: Request) {
   const meters = radius * 1000;
   const query = `[out:json][timeout:15];(
     nwr(around:${meters},${lat},${lon})["sport"="padel"];
+    nwr(around:${meters},${lat},${lon})["leisure"="pitch"]["sport"~"padel|paddle",i];
     nwr(around:${meters},${lat},${lon})["leisure"="sports_centre"]["name"~"p[aá]del",i];
+    nwr(around:${meters},${lat},${lon})["name"~"Chingoland|Club de Amigos|El Triunfo|Lagartos|Terrazzas|P[aá]del Time|Parking P[aá]del|Serrano P[aá]del|Sport Arena|Runa P[aá]del|La Esperanza|Oasis P[aá]del",i];
   );out center tags;`;
 
   try {
