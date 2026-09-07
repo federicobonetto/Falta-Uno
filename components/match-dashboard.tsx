@@ -3,7 +3,7 @@
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowLeft, CalendarDays, Check, ChevronDown, Clock3, Eye, EyeOff, Loader2,
+  ArrowLeft, BellRing, CalendarDays, Check, ChevronDown, Clock3, Eye, EyeOff, Loader2,
   Copy, KeyRound, LockKeyhole, LogOut, MapPin, Pencil, Plus, Trash2,
   ShieldCheck, Target, UserCheck, UsersRound, X,
 } from "lucide-react";
@@ -25,6 +25,7 @@ import {
 import { genderLabel, PADEL_CATEGORIES, positionLabel } from "@/lib/padel";
 import { BrandLogo } from "@/components/brand-logo";
 import { NearbyCourtSelect } from "@/components/nearby-court-select";
+import { AvailabilityForm } from "@/components/availability-form";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -102,7 +103,7 @@ export function MatchDashboard() {
   }, [profile, loadData]);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("tab") === "create") setActiveTab("create");
+    if (["create", "availability"].includes(params.get("tab") ?? "")) setActiveTab(params.get("tab")!);
     const id = Number(params.get("join"));
     if (Number.isInteger(id) && id > 0) setPendingJoinId(id);
     const privateId = params.get("private");
@@ -176,6 +177,7 @@ export function MatchDashboard() {
         <TabsList className="match-tabs-list">
           <TabsTrigger value="open"><Eye /> Partidos abiertos</TabsTrigger>
           <TabsTrigger value="mine"><CalendarDays /> Mis partidos {myMatches.length > 0 && <b>{myMatches.length}</b>}</TabsTrigger>
+          <TabsTrigger value="availability"><BellRing /> Quiero jugar</TabsTrigger>
           <TabsTrigger value="create"><Plus /> Crear partido</TabsTrigger>
         </TabsList>
 
@@ -198,6 +200,7 @@ export function MatchDashboard() {
         <TabsContent value="create" className="tab-panel">
           <CreateMatchForm profile={profile} players={players} onCreated={async () => { await loadData(); setActiveTab("mine"); }} />
         </TabsContent>
+        <TabsContent value="availability" className="tab-panel"><AvailabilityForm /></TabsContent>
       </Tabs>
     </div>
   );
