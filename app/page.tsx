@@ -1,12 +1,13 @@
 import {
   ArrowRight, CalendarCheck2, Check, Clock3, MapPin, MessageCircleMore,
-  LogIn, ShieldCheck, Sparkles, Target, UserRound, UserRoundSearch, UsersRound, Zap,
+  BellRing, LogIn, ShieldCheck, Sparkles, Target, UserRound, UserRoundSearch, UsersRound, Zap,
 } from "lucide-react";
 import { RegistrationForm } from "@/components/registration-form";
 import { ActiveMatchesPreview } from "@/components/active-matches-preview";
 import { BrandLogo } from "@/components/brand-logo";
 import { getAuthUser, loginPath } from "@/lib/auth";
 import { getCurrentPlayer } from "@/lib/current-player";
+import { createSupabaseAdmin } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ const steps = [
 ];
 
 export default async function Home() {
-  const [user, player] = await Promise.all([getAuthUser(), getCurrentPlayer()]);
+  const [user, player, stats] = await Promise.all([getAuthUser(), getCurrentPlayer(), getCommunityStats()]);
   const accountHref = user ? "/partidos" : loginPath("/partidos");
   return (
     <main>
@@ -39,18 +40,19 @@ export default async function Home() {
         <div className="court-line court-line-one" /><div className="court-line court-line-two" />
         <div className="hero-content">
           <div className="hero-copy">
-            <h1>Que nunca más<br />te falte <em>uno.</em></h1>
-            <p className="hero-lead">Encontrá jugadores de tu nivel, completá el equipo y armá tu próximo partido sin depender de diez grupos de WhatsApp.</p>
+            <p className="launch-pill"><span /> Comunidad de pádel en Olavarría</p>
+            <h1>Encontrá el jugador<br />que te falta.</h1>
+            <p className="hero-lead">Publicá un lugar libre o sumate a un partido cerca tuyo, con jugadores de nivel compatible y sin perseguir respuestas por WhatsApp.</p>
             <div className="hero-actions">
-              <a className="primary-cta" href="#partidos-activos">Elegir un partido <ArrowRight aria-hidden="true" /></a>
-              <a className="text-link" href="#como-funciona"><span className="play-dot"><Zap aria-hidden="true" /></span> Mirá cómo funciona</a>
+              <a className="primary-cta" href="#partidos-activos">Ver partidos cerca mío <ArrowRight aria-hidden="true" /></a>
+              <a className="text-link" href={accountHref}><span className="play-dot"><Zap aria-hidden="true" /></span> Publicar un lugar libre</a>
             </div>
             <div className="hero-proof">
               <div className="avatar-stack" aria-hidden="true">
                 {[1, 2, 3].map((avatar) => <span className="photo-avatar" key={avatar}><img src={`/player-avatar-${avatar}.webp`} alt="" width="39" height="39" /></span>)}
                 <span className="more-avatar">+</span>
               </div>
-              <div><strong>Sumate desde el comienzo</strong><small>Registro gratuito para los primeros jugadores</small></div>
+              <div><strong>{stats.players > 0 ? `${stats.players} jugadores ya se registraron` : "Sumate desde el comienzo"}</strong><small>Gratis · Tu teléfono nunca se publica</small></div>
             </div>
           </div>
           <div className="hero-form-wrap"><ActiveMatchesPreview signedIn={Boolean(user)} canCreate={Boolean(player)} /></div>
@@ -58,17 +60,17 @@ export default async function Home() {
       </section>
 
       <section className="pain-strip" aria-label="Beneficios principales">
-        <div><Clock3 aria-hidden="true" /><span><strong>Menos organización</strong><small>Dejá atrás los mensajes eternos</small></span></div>
-        <div><Target aria-hidden="true" /><span><strong>Mejor nivel</strong><small>Jugá con personas compatibles</small></span></div>
-        <div><UsersRound aria-hidden="true" /><span><strong>Más comunidad</strong><small>Conocé nuevos compañeros</small></span></div>
+        <div><Clock3 aria-hidden="true" /><span><strong>Publicá en 1 minuto</strong><small>Horario, club, nivel y lugares</small></span></div>
+        <div><Target aria-hidden="true" /><span><strong>Nivel compatible</strong><small>Sin sorpresas antes de jugar</small></span></div>
+        <div><BellRing aria-hidden="true" /><span><strong>Partidos que se completan</strong><small>{stats.matches > 0 ? `${stats.matches} partidos creados por la comunidad` : "La comunidad empieza en Olavarría"}</small></span></div>
       </section>
 
       <section className="registration-section">
         <div className="registration-copy">
           <p className="eyebrow green">Tu perfil de jugador</p>
-          <h2>Registrate una vez.<br />Jugá todas las que quieras.</h2>
-          <p>Cargá tus datos para anotarte en partidos abiertos, recibir invitaciones privadas y administrar tus próximos encuentros.</p>
-          <ul><li><Check /> Registro gratuito</li><li><Check /> Teléfono protegido</li><li><Check /> Categoría visible para encontrar partidos compatibles</li></ul>
+          <h2>Decí cuándo querés jugar.<br />Nosotros acercamos el partido.</h2>
+          <p>Creá tu perfil en dos pasos para anotarte en partidos, recibir invitaciones y encontrar jugadores sin depender de una lista interminable de contactos.</p>
+          <ul><li><Check /> Perfil gratuito en menos de un minuto</li><li><Check /> Teléfono privado y protegido</li><li><Check /> Partidos filtrados por categoría y ciudad</li></ul>
         </div>
         <div className="registration-section-form"><RegistrationForm signedIn={Boolean(user)} /></div>
       </section>
@@ -131,10 +133,27 @@ export default async function Home() {
         <a className="primary-cta" href="#registro">Crear mi perfil gratis <ArrowRight aria-hidden="true" /></a>
       </section>
 
+      <section className="trust-strip" aria-label="Confianza y privacidad">
+        <div><ShieldCheck /><span><strong>Hecho en Olavarría</strong><small>Una herramienta local para que ningún turno se caiga por falta de jugadores.</small></span></div>
+        <div><BellRing /><span><strong>Contacto sólo cuando importa</strong><small>Usamos tus datos para el perfil y las comunicaciones relacionadas con tus partidos.</small></span></div>
+        <div><UserRound /><span><strong>Vos tenés el control</strong><small>Tu teléfono no se muestra públicamente y podés administrar tus encuentros.</small></span></div>
+      </section>
+
       <footer>
         <BrandLogo href="#inicio" />
         <p>Jugá más. Organizá menos.</p><small>Primera etapa · Comunidad de pádel</small>
       </footer>
     </main>
   );
+}
+
+async function getCommunityStats() {
+  try {
+    const admin = createSupabaseAdmin();
+    const [{ count: players }, { count: matches }] = await Promise.all([
+      admin.from("profiles").select("id", { count: "exact", head: true }),
+      admin.from("matches").select("id", { count: "exact", head: true }).neq("status", "cancelled"),
+    ]);
+    return { players: players ?? 0, matches: matches ?? 0 };
+  } catch { return { players: 0, matches: 0 }; }
 }
