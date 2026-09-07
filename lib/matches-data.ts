@@ -2,7 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase/admin";
 
 import type { CurrentPlayer } from "@/lib/current-player";
 
-export async function loadMatches(viewer: CurrentPlayer | null, publicOnly = false) {
+export async function loadMatches(viewer: CurrentPlayer | null, publicOnly = false, publicLimit = 6) {
   const admin = createSupabaseAdmin();
   let query = admin.from("matches").select("*").neq("status", "cancelled").order("match_date").order("match_time").limit(publicOnly ? 30 : 100);
   if (publicOnly) query = query.eq("visibility", "open").eq("status", "open");
@@ -40,5 +40,5 @@ export async function loadMatches(viewer: CurrentPlayer | null, publicOnly = fal
     const related = match.creatorPlayerId === viewer.id || Boolean(match.viewerStatus);
     if (!publicOnly && match.visibility !== "open" && !related) return false;
     return true;
-  }).filter((match) => !publicOnly || match.confirmedCount < match.maxPlayers).slice(0, publicOnly ? 6 : 100);
+  }).filter((match) => !publicOnly || match.confirmedCount < match.maxPlayers).slice(0, publicOnly ? publicLimit : 100);
 }
