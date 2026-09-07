@@ -43,7 +43,12 @@ export async function GET(request: Request) {
       const key = name.toLocaleLowerCase("es");
       if (seen.has(key)) return [];
       seen.add(key);
-      return [{ id: String(item.id), name, distanceKm: distanceKm(lat, lon, courtLat, courtLon) }];
+      const address = [item.tags?.["addr:street"], item.tags?.["addr:housenumber"]].filter(Boolean).join(" ");
+      return [{
+        id: String(item.id), name, address: address || item.tags?.["addr:full"] || "",
+        latitude: courtLat, longitude: courtLon,
+        distanceKm: distanceKm(lat, lon, courtLat, courtLon),
+      }];
     }).sort((a, b) => a.distanceKm - b.distanceKm);
     return Response.json({ courts });
   } catch {
