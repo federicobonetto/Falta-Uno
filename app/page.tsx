@@ -4,6 +4,7 @@ import {
 } from "lucide-react";
 import { RegistrationForm } from "@/components/registration-form";
 import { ActiveMatchesPreview } from "@/components/active-matches-preview";
+import { NearbyMap } from "@/components/nearby-map";
 import { BrandLogo } from "@/components/brand-logo";
 import { getAuthUser, loginPath } from "@/lib/auth";
 import { getCurrentPlayer } from "@/lib/current-player";
@@ -64,6 +65,8 @@ export default async function Home() {
         <div><Target aria-hidden="true" /><span><strong>Nivel compatible</strong><small>Sin sorpresas antes de jugar</small></span></div>
         <div><BellRing aria-hidden="true" /><span><strong>Partidos que se completan</strong><small>{stats.matches > 0 ? `${stats.matches} partidos creados por la comunidad` : "La comunidad empieza en Olavarría"}</small></span></div>
       </section>
+
+      <NearbyMap signedIn={Boolean(user)} />
 
       <section className="registration-section">
         <div className="registration-copy">
