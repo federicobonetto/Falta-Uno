@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowRight, Clock3, Loader2, MapPin, Target } from "lucide-react";
+import { ArrowRight, BellRing, Clock3, Loader2, MapPin, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -53,7 +53,7 @@ export function ActiveMatchesPreview({ signedIn = false, canCreate = false }: { 
           </article>;
         })}
       </div>}
-      {!loading && matches.length === 0 && <div className="active-empty"><span><Target aria-hidden="true" /></span><h2>Todavía no hay partidos publicados</h2><p>Creá el primero y empezá a sumar jugadores.</p>{canCreate ? <a href="/partidos?tab=create" target="_top">Crear un partido <ArrowRight /></a> : <button type="button" onClick={() => setLoginOpen(true)}>Crear un partido <ArrowRight /></button>}</div>}
+      {!loading && matches.length === 0 && <div className="active-empty"><span><BellRing aria-hidden="true" /></span><p className="active-empty-kicker">La próxima oportunidad puede aparecer hoy</p><h2>¿Querés jugar esta semana?</h2><p>Creá tu perfil y quedá listo para recibir partidos compatibles en Olavarría.</p><div className="empty-actions"><a href="#registro">Quiero jugar <ArrowRight /></a>{canCreate ? <a className="secondary" href="/partidos?tab=create" target="_top">Publicar un lugar</a> : <button className="secondary" type="button" onClick={() => setLoginOpen(true)}>Publicar un lugar</button>}</div></div>}
       <Dialog open={loginOpen} onOpenChange={setLoginOpen}>
         <DialogContent className="login-required-dialog">
           <DialogHeader><span className="login-dialog-icon"><Target /></span><DialogTitle>{signedIn ? "Vinculá tu perfil para crear un partido" : "Iniciá sesión para crear un partido"}</DialogTitle><DialogDescription>{signedIn ? "Antes de organizar un encuentro, necesitás vincular tu cuenta con tu perfil de jugador. Sin un perfil vinculado no se puede publicar ningún partido." : "Solo los jugadores que iniciaron sesión y vincularon su perfil pueden crear partidos. Así identificamos al organizador y protegemos a la comunidad."}</DialogDescription></DialogHeader>
