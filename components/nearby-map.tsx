@@ -15,6 +15,7 @@ export function NearbyMap({ signedIn = false }: { signedIn?: boolean }) {
   const mapNode = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const layerRef = useRef<any>(null);
+  const courtMarkersRef = useRef<Record<string, any>>({});
   const pickingRef = useRef(false);
   const [center, setCenter] = useState<Point>(OLAVARRIA);
   const [radius, setRadius] = useState(10);
@@ -69,7 +70,11 @@ export function NearbyMap({ signedIn = false }: { signedIn?: boolean }) {
     const group = L.layerGroup().addTo(map); layerRef.current = group;
     L.circle([center.lat, center.lon], { radius: radius * 1000, color: "#9ed600", fillColor: "#b9f227", fillOpacity: .07, weight: 2 }).addTo(group);
     L.marker([center.lat, center.lon], { icon: markerIcon("◎", "user") }).addTo(group).bindPopup("Tu punto de búsqueda");
-    courts.forEach((court, index) => L.marker([court.latitude, court.longitude], { icon: markerIcon(String(index + 1), "court") }).addTo(group).bindPopup(`<strong>${escapeText(court.name)}</strong><br>${escapeText(court.address || "Cancha de pádel")}<br><small>${court.distanceKm.toFixed(1)} km</small>`));
+    courtMarkersRef.current = {};
+    courts.forEach((court, index) => {
+      const marker = L.marker([court.latitude, court.longitude], { icon: markerIcon(String(index + 1), "court") }).addTo(group).bindPopup(`<strong>${escapeText(court.name)}</strong><br>${escapeText(court.address || "Cancha de pádel")}<br><small>${court.distanceKm.toFixed(1)} km</small>`);
+      courtMarkersRef.current[court.id] = marker;
+    });
     nearbyMatches.forEach((match) => L.marker([Number(match.latitude), Number(match.longitude)], { icon: markerIcon("P", "match") }).addTo(group).bindPopup(`<strong>${escapeText(match.title)}</strong><br>${escapeText(match.club)} · ${escapeText(match.category)}`));
     map.setView([center.lat, center.lon], radius <= 5 ? 14 : radius <= 10 ? 13 : radius <= 25 ? 11 : 10);
   }, [center, radius, courts, nearbyMatches]);
@@ -84,6 +89,12 @@ export function NearbyMap({ signedIn = false }: { signedIn?: boolean }) {
   }
 
   function togglePicking() { const next = !picking; setPicking(next); pickingRef.current = next; setNotice(next ? "Tocá el mapa donde querés buscar partidos." : "Selección manual cancelada."); }
+
+  function focusCourt(court: Court) {
+    const map = mapRef.current; const marker = courtMarkersRef.current[court.id];
+    if (!map || !marker) return;
+    map.setView([court.latitude, court.longitude], 16); marker.openPopup();
+  }
 
   return <section className="nearby-map-section" id="mapa-partidos">
     <div className="map-section-heading"><div><p className="eyebrow green">Partidos y canchas cerca tuyo</p><h2>Elegí dónde querés jugar.</h2></div><p>Compartí tu ubicación sólo si querés, o marcá un punto en el mapa. Ajustá la distancia y descubrí qué hay disponible.</p></div>
@@ -101,6 +112,14 @@ export function NearbyMap({ signedIn = false }: { signedIn?: boolean }) {
           {!loading && nearbyMatches.map((match) => <article key={match.id} className="nearby-match-card"><span className="nearby-match-pin"><MapPin /></span><div><strong>{match.title}</strong><small>{match.club} · {match.distanceKm.toFixed(1)} km</small><span>{match.matchDate} · {match.matchTime} · {match.category}</span></div><a href={signedIn ? `/partidos?join=${match.id}` : `/login?returnTo=${encodeURIComponent(`/partidos?join=${match.id}`)}`} target="_top" aria-label={`Ver ${match.title}`}><ArrowRight /></a></article>)}
           {!loading && nearbyMatches.length === 0 && <div className="map-empty"><MapPin /><strong>No hay partidos activos en este radio</strong><span>Probá ampliando la distancia o publicá un lugar libre.</span><a href={signedIn ? "/partidos?tab=create" : "/login?returnTo=%2Fpartidos%3Ftab%3Dcreate"} target="_top">Crear partido</a></div>}
         </div>
+        {!loading && courts.length > 0 && <div className="court-results-block">
+          <div className="court-results-title"><strong>Todas las canchas</strong><span>{courts.length} en este radio</span></div>
+          <div className="court-map-list">
+            {courts.map((court, index) => <button type="button" key={court.id} onClick={() => focusCourt(court)}>
+              <b>{String(index + 1).padStart(2, "0")}</b><span><strong>{court.name}</strong><small>{court.address || "Olavarría"} · {court.distanceKm.toFixed(1)} km</small></span><Navigation />
+            </button>)}
+          </div>
+        </div>}
       </aside>
       <div className={picking ? "nearby-map picking" : "nearby-map"} ref={mapNode} role="application" aria-label="Mapa interactivo de partidos y canchas cercanas" />
     </div>
