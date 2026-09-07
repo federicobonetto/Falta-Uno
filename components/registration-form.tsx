@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { Camera, CheckCircle2, Loader2, LockKeyhole, UserPlus } from "lucide-react";
+import { ArrowLeft, ArrowRight, Camera, CheckCircle2, Loader2, LockKeyhole, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -16,6 +16,7 @@ export function RegistrationForm({ signedIn = false }: { signedIn?: boolean }) {
   const [message, setMessage] = useState("");
   const [playerName, setPlayerName] = useState("");
   const [avatarDataUrl, setAvatarDataUrl] = useState<string | null>(null);
+  const [step, setStep] = useState<1 | 2>(1);
   const [pendingJoinId, setPendingJoinId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -91,9 +92,27 @@ export function RegistrationForm({ signedIn = false }: { signedIn?: boolean }) {
     <form className="registration-card" onSubmit={handleSubmit} id="registro">
       <div className="form-heading">
         <span className="form-icon"><UserPlus aria-hidden="true" /></span>
-        <div><p className="eyebrow green">Primeros jugadores</p><h2>Creá tu perfil gratis</h2></div>
+        <div><p className="eyebrow green">Paso {step} de 2 · Menos de un minuto</p><h2>{step === 1 ? "Empezá a encontrar partidos" : "Contanos cómo jugás"}</h2></div>
       </div>
-      <p className="form-intro">Completá tus datos y empezá a formar parte de la comunidad.</p>
+      <div className="registration-progress"><span style={{ width: step === 1 ? "50%" : "100%" }} /></div>
+      <p className="form-intro">{step === 1 ? "Primero creamos tu acceso. En el siguiente paso elegís categoría y posición." : "Estos datos nos ayudan a mostrarte personas y partidos compatibles."}</p>
+      <div className="registration-step" hidden={step !== 1}>
+      <div className="form-grid">
+        <label><span>Nombre</span><Input name="firstName" autoComplete="given-name" placeholder="Tu nombre" minLength={2} required /></label>
+        <label><span>Apellido</span><Input name="lastName" autoComplete="family-name" placeholder="Tu apellido" minLength={2} required /></label>
+      </div>
+      <label><span>Correo electrónico</span><Input name="email" type="email" autoComplete="email" placeholder="tu@email.com" required /></label>
+      <label><span>Contraseña</span><Input name="password" type="password" autoComplete="new-password" placeholder="Mínimo 8 caracteres" minLength={8} required /></label>
+      <label><span>Ciudad</span><Input name="location" autoComplete="address-level2" placeholder="Ej. Olavarría" minLength={2} required /></label>
+      <Button className="register-submit" type="button" onClick={(event) => {
+        const form = event.currentTarget.form;
+        const names = ["firstName", "lastName", "email", "password", "location"];
+        const invalid = names.map((name) => form?.elements.namedItem(name)).find((field) => field instanceof HTMLInputElement && !field.checkValidity());
+        if (invalid instanceof HTMLInputElement) { invalid.reportValidity(); return; }
+        setStep(2);
+      }}>Continuar <ArrowRight /></Button>
+      </div>
+      <div className="registration-step" hidden={step !== 2}>
       <label className="avatar-upload">
         <span className="avatar-preview">{avatarDataUrl ? <img src={avatarDataUrl} alt="Vista previa de tu foto" /> : <Camera aria-hidden="true" />}</span>
         <span><strong>Foto de perfil</strong><small>Subí una foto clara de tu rostro (opcional).</small></span>
@@ -104,12 +123,6 @@ export function RegistrationForm({ signedIn = false }: { signedIn?: boolean }) {
           catch (error) { setStatus("error"); setMessage(error instanceof Error ? error.message : "No pudimos procesar la foto."); event.target.value = ""; }
         }} />
       </label>
-      <div className="form-grid">
-        <label><span>Nombre</span><Input name="firstName" autoComplete="given-name" placeholder="Tu nombre" minLength={2} required /></label>
-        <label><span>Apellido</span><Input name="lastName" autoComplete="family-name" placeholder="Tu apellido" minLength={2} required /></label>
-      </div>
-      <label><span>Correo electrónico</span><Input name="email" type="email" autoComplete="email" placeholder="tu@email.com" required /></label>
-      <label><span>Contraseña</span><Input name="password" type="password" autoComplete="new-password" placeholder="Mínimo 8 caracteres" minLength={8} required /></label>
       <label>
         <span>Categoría</span>
         <Select value={category} onValueChange={(value) => setCategory(value ?? "")}>
@@ -122,14 +135,15 @@ export function RegistrationForm({ signedIn = false }: { signedIn?: boolean }) {
         <fieldset><legend>Juego</legend><RadioGroup value={playingPosition} onValueChange={(value) => setPlayingPosition(value as "drive" | "reves")} className="compact-radio">{(["reves", "drive"] as const).map((position) => <label key={position} className={playingPosition === position ? "selected" : ""}><RadioGroupItem value={position} /> {positionLabel(position)}</label>)}</RadioGroup></fieldset>
       </div>
       <label><span>Teléfono</span><Input name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="Ej. 2284 123456" minLength={8} required /></label>
-      <label><span>Ciudad</span><Input name="location" autoComplete="address-level2" placeholder="Ej. Olavarría" minLength={2} required /></label>
       {status === "error" && <p className="form-error" role="alert">{message}</p>}
+      <button className="registration-back" type="button" onClick={() => setStep(1)}><ArrowLeft /> Volver</button>
       <Button className="register-submit" type="submit" disabled={status === "loading"}>
         {status === "loading" ? <Loader2 className="spin" aria-hidden="true" /> : <UserPlus aria-hidden="true" />}
         {status === "loading" ? "Creando perfil..." : "Registrarse"}
       </Button>
       <p className="privacy-note"><LockKeyhole aria-hidden="true" /> Tu teléfono no se va a compartir. Te vamos a mandar un mensaje para recordarte el partido.</p>
       <a className="existing-profile-link" href={accountHref("/partidos", signedIn)} target="_top">¿Ya te registraste? Iniciá sesión con tu perfil</a>
+      </div>
     </form>
   );
 }
