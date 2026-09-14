@@ -4,6 +4,7 @@ import "./globals.css";
 import "./frontend-refresh.css";
 import "./frontend-court-v2.css";
 import "./frontend-identity-v3.css";
+import "./frontend-flow-v4.css";
 
 const displayFont = Barlow_Condensed({
   subsets: ["latin"],
