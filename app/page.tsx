@@ -13,9 +13,33 @@ import { createSupabaseAdmin } from "@/lib/supabase/admin";
 export const dynamic = "force-dynamic";
 
 const steps = [
-  { number: "01", label: "Tu punto de partida", icon: UserRoundSearch, title: "Decí cómo jugás", text: "Creá tu perfil con categoría, posición y ciudad. Esa información hace que cada partido tenga contexto real." },
-  { number: "02", label: "Lo que pasa alrededor", icon: UsersRound, title: "Mirá qué se está armando", text: "Ves encuentros por zona, nivel y horario. Elegís sólo los que realmente encajan con vos." },
-  { number: "03", label: "El punto decisivo", icon: CalendarCheck2, title: "Completá la cancha", text: "Reservá tu lugar o publicá el que falta. Cuando aparecen los cuatro, hay partido." },
+  {
+    number: "01",
+    label: "TU PERFIL",
+    icon: UserRoundSearch,
+    title: "Decí cómo jugás",
+    text: "Categoría, posición y ciudad. Lo justo para que un partido tenga contexto antes de que te anotes.",
+    facts: ["6ta", "Revés", "Olavarría"],
+    state: "Perfil listo",
+  },
+  {
+    number: "02",
+    label: "MATCHING",
+    icon: UsersRound,
+    title: "Ves qué partido encaja",
+    text: "Horario, club, nivel y lugares disponibles en una sola vista. Sin preguntar todo por WhatsApp.",
+    facts: ["Hoy 20:30", "10 km", "1 lugar"],
+    state: "Partido encontrado",
+  },
+  {
+    number: "03",
+    label: "CONFIRMACIÓN",
+    icon: CalendarCheck2,
+    title: "Te sumás y completás la cancha",
+    text: "Reservás tu lugar y el encuentro queda actualizado para todos. Cuando son cuatro, hay partido.",
+    facts: ["Club definido", "6ta", "Confirmado"],
+    state: "Somos 4",
+  },
 ];
 
 export default async function Home() {
@@ -78,35 +102,54 @@ export default async function Home() {
         <div className="registration-section-form"><RegistrationForm signedIn={Boolean(user)} /></div>
       </section>
 
-      <section className="how-section court-story" id="como-funciona">
-        <div className="how-top">
-          <div className="section-heading">
-            <p className="eyebrow green">Cómo se arma un partido</p>
-            <h2>La cancha se completa movimiento a movimiento.</h2>
-            <p>No quería explicar Falta Uno con tres tarjetas genéricas. Acá el recorrido sucede literalmente sobre una cancha: primero aparecés vos, después el partido y al final el cuarto jugador.</p>
-          </div>
-          <div className="how-roster" aria-label="Ejemplo de partido en formación">
-            <small>Partido en formación</small>
-            <div className="how-roster-row"><span className="filled">1</span><span className="filled">2</span><span className="filled">3</span><span>4</span><strong>falta uno</strong></div>
-          </div>
-        </div>
+      <section className="how-section flow-story" id="como-funciona">
+        <div className="flow-shell">
+          <div className="flow-intro">
+            <p className="eyebrow">Cómo funciona</p>
+            <h2>Un partido se entiende en segundos.</h2>
+            <p className="flow-lead">Falta Uno ordena la información que hoy está repartida entre mensajes, grupos y llamadas. Vos ves lo importante y decidís rápido.</p>
 
-        <div className="court-process" aria-label="Proceso para completar un partido">
-          <span className="court-net" aria-hidden="true" />
-          <svg className="court-route" viewBox="0 0 1000 520" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M120 120 C260 55 300 410 480 390 C650 370 675 110 870 115" />
-            <circle cx="120" cy="120" r="8" /><circle cx="480" cy="390" r="8" /><circle cx="870" cy="115" r="8" />
-          </svg>
-          <span className="court-process-ball" aria-hidden="true" />
-          {steps.map((step, index) => {
-            const Icon = step.icon;
-            return <article className={`court-step court-step-${index + 1}`} key={step.number}>
-              <div className="court-step-head"><span className="court-step-number">{step.number}</span><span className="court-step-icon"><Icon aria-hidden="true" /></span></div>
-              <div className="court-step-copy"><span>{step.label}</span><h3>{step.title}</h3><p>{step.text}</p></div>
-            </article>;
-          })}
+            <div className="formation-card" aria-label="Ejemplo de partido con tres de cuatro jugadores confirmados">
+              <div className="formation-card-head"><span>PARTIDO EN FORMACIÓN</span><strong>3 / 4</strong></div>
+              <div className="formation-slots">
+                <span className="filled"><UserRound /><small>1</small></span>
+                <span className="filled"><UserRound /><small>2</small></span>
+                <span className="filled"><UserRound /><small>3</small></span>
+                <span className="missing"><span>+</span><small>falta uno</small></span>
+              </div>
+              <div className="formation-note"><span className="live-dot" /> Un lugar libre · el partido sigue visible</div>
+            </div>
+          </div>
+
+          <div className="flow-board" aria-label="Recorrido para encontrar y completar un partido">
+            <div className="flow-board-head">
+              <div><span>RECORRIDO REAL</span><strong>De perfil a cancha</strong></div>
+              <small>Ejemplo visual</small>
+            </div>
+
+            <div className="flow-rows">
+              {steps.map((step) => {
+                const Icon = step.icon;
+                return <article className="flow-row" key={step.number}>
+                  <div className="flow-number">{step.number}</div>
+                  <div className="flow-icon"><Icon aria-hidden="true" /></div>
+                  <div className="flow-main">
+                    <span>{step.label}</span>
+                    <h3>{step.title}</h3>
+                    <p>{step.text}</p>
+                    <div className="flow-facts">{step.facts.map((fact) => <b key={fact}>{fact}</b>)}</div>
+                  </div>
+                  <div className="flow-state"><Check aria-hidden="true" /><span>{step.state}</span></div>
+                </article>;
+              })}
+            </div>
+
+            <div className="flow-board-footer">
+              <div><span>RESULTADO</span><strong>Menos coordinación. Más juego.</strong></div>
+              <a href={accountHref}>Ver partidos abiertos <ArrowRight aria-hidden="true" /></a>
+            </div>
+          </div>
         </div>
-        <p className="court-caption">El recorrido no termina en un formulario: termina cuando hay cuatro personas y una cancha.</p>
       </section>
 
       <section className="match-section" id="partido">
