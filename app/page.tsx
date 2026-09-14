@@ -13,9 +13,9 @@ import { createSupabaseAdmin } from "@/lib/supabase/admin";
 export const dynamic = "force-dynamic";
 
 const steps = [
-  { number: "01", label: "Tu punto de partida", icon: UserRoundSearch, title: "Decí cómo jugás", text: "Creá tu perfil con categoría, posición y ciudad para que los partidos tengan contexto real." },
-  { number: "02", label: "Encontrá compatibilidad", icon: UsersRound, title: "Mirá qué se está armando", text: "Explorá encuentros por zona, nivel y horario antes de decidir si querés sumarte." },
-  { number: "03", label: "Todo listo para jugar", icon: CalendarCheck2, title: "Completá la cancha", text: "Reservá tu lugar o publicá el que falta. Cuando son cuatro, hay partido." },
+  { number: "01", label: "Tu punto de partida", icon: UserRoundSearch, title: "Decí cómo jugás", text: "Creá tu perfil con categoría, posición y ciudad. Esa información hace que cada partido tenga contexto real." },
+  { number: "02", label: "Lo que pasa alrededor", icon: UsersRound, title: "Mirá qué se está armando", text: "Ves encuentros por zona, nivel y horario. Elegís sólo los que realmente encajan con vos." },
+  { number: "03", label: "El punto decisivo", icon: CalendarCheck2, title: "Completá la cancha", text: "Reservá tu lugar o publicá el que falta. Cuando aparecen los cuatro, hay partido." },
 ];
 
 export default async function Home() {
@@ -78,24 +78,35 @@ export default async function Home() {
         <div className="registration-section-form"><RegistrationForm signedIn={Boolean(user)} /></div>
       </section>
 
-      <section className="how-section" id="como-funciona">
-        <div className="section-heading">
-          <p className="eyebrow green">Tres movimientos</p>
-          <h2>De “falta uno” a “somos cuatro”.</h2>
-          <p>La idea es simple: mostrar la demanda real de juego y hacer visible el lugar que todavía está libre.</p>
+      <section className="how-section court-story" id="como-funciona">
+        <div className="how-top">
+          <div className="section-heading">
+            <p className="eyebrow green">Cómo se arma un partido</p>
+            <h2>La cancha se completa movimiento a movimiento.</h2>
+            <p>No quería explicar Falta Uno con tres tarjetas genéricas. Acá el recorrido sucede literalmente sobre una cancha: primero aparecés vos, después el partido y al final el cuarto jugador.</p>
+          </div>
+          <div className="how-roster" aria-label="Ejemplo de partido en formación">
+            <small>Partido en formación</small>
+            <div className="how-roster-row"><span className="filled">1</span><span className="filled">2</span><span className="filled">3</span><span>4</span><strong>falta uno</strong></div>
+          </div>
         </div>
-        <div className="steps-grid">
-          {steps.map((step) => {
+
+        <div className="court-process" aria-label="Proceso para completar un partido">
+          <span className="court-net" aria-hidden="true" />
+          <svg className="court-route" viewBox="0 0 1000 520" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M120 120 C260 55 300 410 480 390 C650 370 675 110 870 115" />
+            <circle cx="120" cy="120" r="8" /><circle cx="480" cy="390" r="8" /><circle cx="870" cy="115" r="8" />
+          </svg>
+          <span className="court-process-ball" aria-hidden="true" />
+          {steps.map((step, index) => {
             const Icon = step.icon;
-            return (
-              <article className="step-card" key={step.number} tabIndex={0}>
-                <span className="step-number">{step.number}</span><span className="step-icon"><Icon aria-hidden="true" /></span>
-                <span className="step-kicker">{step.label}</span><h3>{step.title}</h3><p>{step.text}</p>
-                {step.number !== "03" && <ArrowRight className="step-arrow" aria-hidden="true" />}
-              </article>
-            );
+            return <article className={`court-step court-step-${index + 1}`} key={step.number}>
+              <div className="court-step-head"><span className="court-step-number">{step.number}</span><span className="court-step-icon"><Icon aria-hidden="true" /></span></div>
+              <div className="court-step-copy"><span>{step.label}</span><h3>{step.title}</h3><p>{step.text}</p></div>
+            </article>;
           })}
         </div>
+        <p className="court-caption">El recorrido no termina en un formulario: termina cuando hay cuatro personas y una cancha.</p>
       </section>
 
       <section className="match-section" id="partido">
