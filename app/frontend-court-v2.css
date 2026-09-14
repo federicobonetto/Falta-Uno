@@ -1,0 +1,281 @@
+/* Falta Uno — Court v2
+   Stronger subject-led visual language: court lines, scoreboards and club signage.
+   This file intentionally overrides frontend-refresh.css on the test branch. */
+
+:root {
+  --fu-tape: #d9ef5b;
+  --fu-no-pink: #d9ef5b;
+}
+
+/* Remove the coral/pink accent from the previous exploration. */
+.launch-pill span { background: var(--fu-ball); }
+.match-demo { box-shadow: 12px 12px 0 rgba(6, 27, 23, .26); }
+.final-cta { border-top-color: var(--fu-court); }
+.auth-card,
+.claim-card { border-top-color: var(--fu-ball); box-shadow: 14px 14px 0 rgba(217,239,91,.12), 0 30px 80px rgba(0,0,0,.32); }
+.private-access-button svg { color: var(--fu-court-2); }
+
+/* New explanation section: a real court becomes the information architecture. */
+.how-section.court-story {
+  position: relative;
+  overflow: hidden;
+  padding: 112px 24px 126px;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(217,239,91,.08), transparent 28%),
+    #061f1b;
+  color: #f5f8f4;
+}
+.how-section.court-story::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 52px 52px;
+  pointer-events: none;
+}
+.how-top {
+  position: relative;
+  z-index: 2;
+  width: min(1160px, 100%);
+  margin: 0 auto 46px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr);
+  gap: 64px;
+  align-items: end;
+}
+.court-story .section-heading {
+  max-width: 720px;
+  margin: 0;
+  text-align: left;
+}
+.court-story .section-heading .eyebrow { color: var(--fu-ball); }
+.court-story .section-heading h2 {
+  max-width: 720px;
+  color: #f7faf5;
+  font-size: clamp(3.2rem, 5.4vw, 5.4rem);
+  line-height: .9;
+  letter-spacing: -.025em;
+  text-wrap: balance;
+}
+.court-story .section-heading > p:last-child {
+  max-width: 620px;
+  margin: 20px 0 0;
+  color: #b8cac1;
+  line-height: 1.65;
+}
+.how-roster {
+  justify-self: end;
+  width: min(360px, 100%);
+  padding: 20px 0 3px;
+  border-top: 1px solid rgba(255,255,255,.22);
+}
+.how-roster > small {
+  display: block;
+  margin-bottom: 12px;
+  color: #8fa69d;
+  font-size: .72rem;
+  font-weight: 750;
+}
+.how-roster-row { display: flex; align-items: center; gap: 8px; }
+.how-roster-row span {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  color: #a9bbb3;
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.how-roster-row span.filled { border-color: var(--fu-ball); background: var(--fu-ball); color: var(--fu-ink); }
+.how-roster-row strong { margin-left: 8px; color: #f5f8f4; font-size: .9rem; }
+
+.court-process {
+  position: relative;
+  z-index: 2;
+  width: min(1160px, 100%);
+  min-height: 520px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 2px solid rgba(244,247,241,.84);
+  border-radius: 6px;
+  background:
+    linear-gradient(90deg, transparent 49.8%, rgba(244,247,241,.75) 49.8%, rgba(244,247,241,.75) 50.2%, transparent 50.2%),
+    linear-gradient(180deg, transparent 49.8%, rgba(244,247,241,.7) 49.8%, rgba(244,247,241,.7) 50.2%, transparent 50.2%),
+    linear-gradient(90deg, transparent 24.8%, rgba(244,247,241,.35) 24.8%, rgba(244,247,241,.35) 25.05%, transparent 25.05%, transparent 74.95%, rgba(244,247,241,.35) 74.95%, rgba(244,247,241,.35) 75.2%, transparent 75.2%),
+    #0b4b41;
+  box-shadow: inset 0 0 0 10px rgba(0,0,0,.08), 0 30px 70px rgba(0,0,0,.28);
+}
+.court-process::before,
+.court-process::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  background: rgba(244,247,241,.35);
+}
+.court-process::before { top: 25%; }
+.court-process::after { bottom: 25%; }
+.court-net {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  transform: translateX(-50%);
+  background: repeating-linear-gradient(to bottom, rgba(244,247,241,.95) 0 6px, rgba(244,247,241,.25) 6px 11px);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.16);
+}
+.court-route {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.court-route path {
+  fill: none;
+  stroke: var(--fu-ball);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 9 12;
+  opacity: .82;
+}
+.court-route circle { fill: var(--fu-ball); stroke: var(--fu-ink); stroke-width: 3; }
+
+.court-step {
+  position: absolute;
+  z-index: 4;
+  width: min(320px, 31%);
+  padding: 18px 19px 19px;
+  background: rgba(4, 30, 26, .86);
+  border-left: 4px solid var(--fu-ball);
+  box-shadow: 0 16px 36px rgba(0,0,0,.18);
+  backdrop-filter: blur(8px);
+}
+.court-step-1 { left: 4.5%; top: 8%; }
+.court-step-2 { left: 34.5%; bottom: 7%; }
+.court-step-3 { right: 4.5%; top: 9%; }
+.court-step-head { display: flex; align-items: center; gap: 12px; margin-bottom: 13px; }
+.court-step-number {
+  color: var(--fu-ball);
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: .8;
+}
+.court-step-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(217,239,91,.45);
+  border-radius: 50%;
+  color: var(--fu-ball);
+}
+.court-step-icon svg { width: 18px; }
+.court-step-copy > span { color: #9eb2a9; font-size: .7rem; font-weight: 750; }
+.court-step h3 { margin: 5px 0 8px; color: #fff; font-size: 1.55rem; font-weight: 650; letter-spacing: -.01em; }
+.court-step p { margin: 0; color: #c2d2cb; font-size: .88rem; line-height: 1.58; }
+.court-process-ball {
+  position: absolute;
+  z-index: 5;
+  left: calc(50% - 16px);
+  top: calc(50% - 16px);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--fu-ball);
+  box-shadow: 0 0 0 8px rgba(217,239,91,.14);
+}
+.court-process-ball::before,
+.court-process-ball::after {
+  content: "";
+  position: absolute;
+  border: 1px solid rgba(6,27,23,.52);
+  border-radius: 50%;
+}
+.court-process-ball::before { inset: 5px -5px 5px 10px; transform: rotate(28deg); }
+.court-process-ball::after { inset: 5px 10px 5px -5px; transform: rotate(-28deg); }
+.court-caption {
+  position: relative;
+  z-index: 2;
+  width: min(1160px, 100%);
+  margin: 18px auto 0;
+  color: #89a198;
+  font-size: .75rem;
+  text-align: right;
+}
+
+/* Concepts page — visual alternatives to compare before touching main. */
+.concepts-page { min-height: 100vh; background: #eff3ee; color: var(--fu-ink); }
+.concepts-header { padding: 54px max(24px, calc((100vw - 1180px)/2)) 36px; background: var(--fu-ink); color: #fff; }
+.concepts-header h1 { margin: 9px 0 12px; font-family: var(--font-display), "Arial Narrow", sans-serif; font-size: clamp(3rem, 6vw, 5.8rem); font-weight: 650; line-height: .88; letter-spacing: -.025em; }
+.concepts-header p { max-width: 690px; color: #b8c9c2; line-height: 1.65; }
+.concept-block { padding: 82px max(24px, calc((100vw - 1180px)/2)); }
+.concept-label { display: flex; align-items: baseline; gap: 14px; margin-bottom: 28px; }
+.concept-label b { font-family: var(--font-display), "Arial Narrow", sans-serif; font-size: 2.2rem; color: var(--fu-court); }
+.concept-label span { color: #667a71; font-size: .82rem; }
+
+/* B — club scoreboard */
+.score-concept { background: #dfe6df; }
+.scoreboard-process { border: 3px solid var(--fu-ink); background: #071d19; color: #fff; box-shadow: 10px 10px 0 #b8c8be; }
+.scoreboard-head { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 25px; padding: 28px 30px; border-bottom: 1px solid #335047; }
+.scoreboard-head h2 { margin: 0; font-family: var(--font-display), "Arial Narrow", sans-serif; font-size: clamp(2.8rem, 5vw, 4.8rem); font-weight: 650; line-height: .9; }
+.scoreboard-head strong { color: var(--fu-ball); font-family: var(--font-display), "Arial Narrow", sans-serif; font-size: 4rem; line-height: .8; }
+.scoreboard-steps { display: grid; grid-template-columns: repeat(3,1fr); }
+.scoreboard-step { min-height: 230px; padding: 25px 28px; border-right: 1px solid #335047; }
+.scoreboard-step:last-child { border-right: 0; }
+.scoreboard-step small { color: var(--fu-ball); font-size: .72rem; }
+.scoreboard-step h3 { margin: 22px 0 10px; font-family: var(--font-display), "Arial Narrow", sans-serif; font-size: 1.65rem; }
+.scoreboard-step p { margin: 0; color: #afc1b9; line-height: 1.6; }
+
+/* C — club noticeboard, intentionally asymmetric. */
+.notice-concept { background: #f5f1e8; }
+.noticeboard-process { position: relative; min-height: 510px; padding: 38px; overflow: hidden; background: #d6c7a6; border: 8px solid #7c6445; box-shadow: inset 0 0 0 2px rgba(255,255,255,.35); }
+.noticeboard-title { max-width: 550px; transform: rotate(-1deg); }
+.noticeboard-title h2 { margin: 0; font-family: var(--font-display), "Arial Narrow", sans-serif; font-size: 3.8rem; line-height: .9; }
+.notice-note { position: absolute; width: 29%; min-height: 210px; padding: 24px; background: #fbfbf1; color: #14231e; box-shadow: 0 10px 20px rgba(74,55,32,.16); }
+.notice-note::before { content: ""; position: absolute; width: 14px; height: 14px; top: 12px; left: 50%; transform: translateX(-50%); border-radius: 50%; background: var(--fu-court); box-shadow: inset 0 0 0 3px rgba(255,255,255,.38); }
+.notice-note-1 { left: 6%; bottom: 30px; transform: rotate(-2deg); }
+.notice-note-2 { left: 36%; top: 150px; transform: rotate(1.4deg); background: #eff6d1; }
+.notice-note-3 { right: 5%; bottom: 40px; transform: rotate(-1deg); }
+.notice-note strong { display: block; margin-top: 15px; font-family: var(--font-display), "Arial Narrow", sans-serif; font-size: 2.1rem; color: var(--fu-court); }
+.notice-note h3 { margin: 13px 0 8px; font-size: 1.06rem; }
+.notice-note p { margin: 0; color: #5c6b64; font-size: .83rem; line-height: 1.55; }
+
+@media (max-width: 860px) {
+  .how-top { grid-template-columns: 1fr; gap: 32px; }
+  .how-roster { justify-self: start; }
+  .court-process { min-height: auto; padding: 22px; display: grid; gap: 16px; background: #0b4b41; }
+  .court-net,
+  .court-route,
+  .court-process-ball { display: none; }
+  .court-step { position: relative; inset: auto; width: 100%; background: rgba(4,30,26,.78); }
+  .court-caption { text-align: left; }
+  .scoreboard-head { grid-template-columns: 1fr; }
+  .scoreboard-steps { grid-template-columns: 1fr; }
+  .scoreboard-step { min-height: 0; border-right: 0; border-bottom: 1px solid #335047; }
+  .scoreboard-step:last-child { border-bottom: 0; }
+  .noticeboard-process { min-height: auto; display: grid; gap: 18px; }
+  .noticeboard-title { margin-bottom: 12px; }
+  .notice-note { position: relative; inset: auto; width: 100%; transform: none; }
+}
+
+@media (max-width: 560px) {
+  .how-section.court-story { padding: 82px 16px; }
+  .court-story .section-heading h2 { font-size: 3rem; }
+  .how-roster-row span { width: 38px; height: 38px; }
+  .court-process { padding: 14px; }
+  .court-step { padding: 17px; }
+  .concept-block { padding: 60px 16px; }
+  .noticeboard-process { padding: 22px; border-width: 5px; }
+  .noticeboard-title h2 { font-size: 3rem; }
+}
