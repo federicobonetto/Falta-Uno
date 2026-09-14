@@ -37,15 +37,21 @@ export function AvailabilityForm() {
     finally { setSaving(false); }
   }
 
-  if (loading) return <div className="availability-loading"><Loader2 className="spin" /> Cargando disponibilidad...</div>;
+  if (loading) return <div className="availability-loading"><Loader2 className="spin" /> Preparando tu semana...</div>;
   return <section className="availability-layout">
     <div className="availability-card">
-      <span className="availability-icon"><BellRing /></span><p className="eyebrow green">Avisos compatibles</p>
-      <h2>¿Cuándo querés jugar?</h2><p>Marcá tus días habituales. Cuando se publique un partido de tu nivel y ciudad, vas a estar listo para sumarte.</p>
-      <fieldset><legend>Días disponibles</legend><div className="day-picker">{days.map(([value, label]) => <button type="button" key={value} className={selectedDays.includes(value) ? "selected" : ""} onClick={() => toggle(value)}>{selectedDays.includes(value) && <Check />}{label}</button>)}</div></fieldset>
-      <label><span>Horario preferido</span><Select value={timeSlot} onValueChange={(value) => setTimeSlot(value ?? "noche")}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="manana">Mañana</SelectItem><SelectItem value="tarde">Tarde</SelectItem><SelectItem value="noche">Noche</SelectItem><SelectItem value="indistinto">Cualquier horario</SelectItem></SelectContent></Select></label>
-      <Button onClick={() => void save()} disabled={saving}>{saving ? <Loader2 className="spin" /> : <BellRing />}{saving ? "Guardando..." : "Avisarme de partidos"}</Button>
+      <span className="availability-icon"><BellRing /></span>
+      <p className="eyebrow green">Tu semana de juego</p>
+      <h2>Marcá cuándo te viene bien.</h2>
+      <p>No hace falta buscar todos los días. Guardá tus momentos disponibles y usalos como referencia para encontrar partidos que realmente puedas jugar.</p>
+      <fieldset><legend>Días disponibles</legend><div className="day-picker">{days.map(([value, label]) => <button type="button" key={value} className={selectedDays.includes(value) ? "selected" : ""} onClick={() => toggle(value)} aria-pressed={selectedDays.includes(value)}>{selectedDays.includes(value) && <Check />}{label}</button>)}</div></fieldset>
+      <label><span>Momento del día</span><Select value={timeSlot} onValueChange={(value) => setTimeSlot(value ?? "noche")}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="manana">Mañana</SelectItem><SelectItem value="tarde">Tarde</SelectItem><SelectItem value="noche">Noche</SelectItem><SelectItem value="indistinto">Cualquier horario</SelectItem></SelectContent></Select></label>
+      <Button onClick={() => void save()} disabled={saving}>{saving ? <Loader2 className="spin" /> : <BellRing />}{saving ? "Guardando..." : "Guardar mi disponibilidad"}</Button>
     </div>
-    <aside className="availability-help"><strong>¿Cómo funciona?</strong><ol><li>Guardás tus días y horario.</li><li>Se publica un partido compatible.</li><li>Recibís el aviso y elegís si querés sumarte.</li></ol><small>Tu disponibilidad no muestra tu teléfono ni te obliga a participar.</small></aside>
+    <aside className="availability-help">
+      <strong>Una señal simple para la comunidad</strong>
+      <ol><li>Elegís tus días habituales.</li><li>Definís el momento que preferís.</li><li>Cuando aparezca un partido compatible, ya sabemos que puede interesarte.</li></ol>
+      <small>Tu disponibilidad es privada: no publica tu teléfono ni te anota automáticamente en ningún partido.</small>
+    </aside>
   </section>;
 }
