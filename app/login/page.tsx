@@ -21,15 +21,16 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   return <main className="auth-page">
     <BrandLogo href="/" />
     <form className="auth-card" action={signIn}>
-      <p className="eyebrow green">Tu cuenta</p><h1>Iniciar sesión</h1>
-      <p>Ingresá con el correo y la contraseña que usaste al registrarte.</p>
+      <p className="eyebrow green">Tu lugar en la cancha</p>
+      <h1>Volvé a tus partidos.</h1>
+      <p>Ingresá para ver encuentros abiertos, administrar los tuyos y encontrar dónde jugar.</p>
       <input type="hidden" name="returnTo" value={returnTo} />
       <label><span>Correo electrónico</span><input name="email" type="email" autoComplete="email" required /></label>
       <label><span>Contraseña</span><input name="password" type="password" autoComplete="current-password" minLength={8} required /></label>
       {params.error && <p className="form-error">{params.error}</p>}
       {params.message && <p className="auth-message">{params.message}</p>}
-      <button type="submit">Ingresar</button>
-      <Link href="/#registro">Todavía no tengo una cuenta</Link>
+      <button type="submit">Entrar a Falta Uno</button>
+      <Link href="/#registro">Crear mi perfil de jugador</Link>
     </form>
   </main>;
 }
