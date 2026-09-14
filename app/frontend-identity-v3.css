@@ -1,0 +1,386 @@
+/* Falta Uno — Identity v3
+   Direction: local padel club + live match board.
+   Principles: court geometry, scoreboard typography, sharp shapes, lime signal color,
+   no decorative pink/coral, and one visual language across home + product. */
+
+:root {
+  --fu-ink: #041d19;
+  --fu-court: #0b473d;
+  --fu-court-deep: #062c26;
+  --fu-court-light: #17665a;
+  --fu-ball: #dcef58;
+  --fu-chalk: #f4f6ef;
+  --fu-paper: #fbfcf8;
+  --fu-line: #c8d4cd;
+  --fu-muted: #6c7e76;
+}
+
+/* The shape language: fewer pills, more club signage / score panels. */
+.nav-cta,
+.nav-login,
+.primary-cta,
+.secondary-cta,
+.join-demo,
+.active-match-action > a,
+.register-submit,
+.quick-create,
+.private-access-button,
+.match-actions button,
+.publish-match,
+.auth-card button,
+.claim-card button { border-radius: 3px !important; }
+
+.visibility-badge,
+.places-badge,
+.format-badge,
+.mixed-match-badge,
+.demo-label,
+.dialog-badges span { border-radius: 2px !important; }
+
+/* Display typography behaves like a scoreboard. */
+.hero h1,
+.section-heading h2,
+.registration-copy h2,
+.map-section-heading h2,
+.match-copy h2,
+.final-cta h2,
+.app-intro h1,
+.panel-heading h2,
+.real-match-card h3,
+.auth-card h1,
+.claim-card h1 {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-variation-settings: "wdth" 95;
+}
+
+/* HERO ------------------------------------------------------------------ */
+.hero { isolation: isolate; }
+.hero::after {
+  content: "OLAVARRÍA  /  PÁDEL  /  FALTA UNO";
+  position: absolute;
+  z-index: 3;
+  right: -117px;
+  top: 49%;
+  width: 310px;
+  padding: 9px 12px;
+  transform: rotate(90deg);
+  border-top: 1px solid rgba(255,255,255,.22);
+  color: rgba(232,240,236,.62);
+  font-size: .62rem;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-align: center;
+}
+.hero-content { position: relative; }
+.hero-copy { padding-left: 30px; }
+.hero-copy::before { width: 5px; height: 196px; background: var(--fu-ball); }
+.launch-pill {
+  border: 0;
+  border-left: 3px solid var(--fu-ball);
+  border-radius: 0;
+  background: rgba(4,29,25,.55);
+  padding: 7px 12px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .65rem;
+}
+.launch-pill span { display: none; }
+.hero h1 {
+  max-width: 760px;
+  font-size: clamp(4.8rem, 8vw, 8rem);
+  line-height: .78;
+  letter-spacing: -.025em;
+}
+.hero-lead { max-width: 590px; font-size: 1.03rem; }
+.hero-actions { margin-top: 31px; }
+.primary-cta { position: relative; padding: 16px 21px; }
+.primary-cta::after { content: "↗"; font-size: .85rem; margin-left: 2px; }
+.primary-cta svg { display: none; }
+.text-link { padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,.28); }
+.play-dot { border-radius: 50%; }
+.hero-proof { position: relative; padding-top: 17px; border-top: 1px solid rgba(255,255,255,.16); max-width: 440px; }
+
+/* Active matches becomes the live board / signature component. */
+.active-matches-panel {
+  position: relative;
+  overflow: visible;
+  border-radius: 0;
+  border: 2px solid var(--fu-ink);
+  box-shadow: 11px 11px 0 var(--fu-ball);
+}
+.active-matches-panel::before {
+  content: "MATCH BOARD";
+  position: absolute;
+  right: 0;
+  top: -27px;
+  color: var(--fu-ball);
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+}
+.active-panel-heading { border-bottom: 3px solid var(--fu-ink); }
+.active-panel-heading p {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+.active-pulse { width: 10px; height: 10px; border-radius: 0; background: var(--fu-ball); }
+.active-match-row { position: relative; min-height: 96px; border-bottom: 1px solid #bcc9c2; }
+.active-match-row::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  width: 34px;
+  height: 1px;
+  background: var(--fu-court);
+}
+.active-date { border-radius: 0; background: var(--fu-ink); }
+.active-date strong { font-size: 1.85rem; }
+.active-match-action > a { background: var(--fu-court); }
+
+/* Benefit strip = ticker / scoreboard footer. */
+.pain-strip {
+  min-height: 100px;
+  padding-block: 0;
+  background: var(--fu-ball);
+  color: var(--fu-ink);
+}
+.pain-strip > div { min-height: 100px; position: relative; padding-left: 54px; border-right: 2px solid rgba(4,29,25,.22); }
+.pain-strip > div::before {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-size: 2.4rem;
+  font-weight: 650;
+  opacity: .35;
+}
+.pain-strip > div:nth-child(1)::before { content: "01"; }
+.pain-strip > div:nth-child(2)::before { content: "02"; }
+.pain-strip > div:nth-child(3)::before { content: "03"; }
+.pain-strip svg { display: none; }
+.pain-strip strong { font-size: .88rem; }
+.pain-strip small { color: rgba(4,29,25,.65); }
+
+/* MAP = game radar. */
+.nearby-map-section { position: relative; overflow: hidden; }
+.nearby-map-section::after {
+  content: "RADAR DE JUEGO";
+  position: absolute;
+  z-index: 0;
+  right: -8px;
+  top: 34px;
+  color: rgba(217,239,91,.055);
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-size: clamp(5rem, 12vw, 11rem);
+  font-weight: 650;
+  line-height: 1;
+  pointer-events: none;
+}
+.map-section-heading,
+.nearby-map-shell,
+.map-legend { position: relative; z-index: 1; }
+.map-section-heading { display: grid; grid-template-columns: 1fr .8fr; gap: 60px; align-items: end; }
+.map-section-heading .eyebrow::before { content: "02 / "; color: var(--fu-ball); }
+.map-section-heading h2 { font-size: clamp(3.6rem, 6vw, 6.3rem); }
+.nearby-map-shell { border-radius: 0; border: 2px solid rgba(255,255,255,.28); box-shadow: 12px 12px 0 rgba(217,239,91,.1); }
+.nearby-sidebar { border-right-width: 2px; }
+.location-primary,
+.location-secondary,
+.map-result-tabs button,
+.court-map-list button,
+.nearby-match-card { border-radius: 0; }
+.location-primary { background: var(--fu-ball); }
+.map-result-tabs button.active { box-shadow: inset 0 -4px var(--fu-ball); }
+.court-map-list button > b { border-radius: 0; }
+
+/* REGISTRATION = actual player card / club form. */
+.registration-section { position: relative; overflow: hidden; }
+.registration-section::before {
+  content: "01";
+  position: absolute;
+  left: max(12px, calc((100vw - 1220px)/2));
+  bottom: -72px;
+  color: rgba(11,71,61,.06);
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-size: 17rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.registration-copy,
+.registration-section-form { position: relative; z-index: 1; }
+.registration-copy .eyebrow::before { content: "FICHA 01 / "; color: var(--fu-court); }
+.registration-copy h2 { font-size: clamp(3.4rem, 5.8vw, 5.8rem); }
+.registration-card,
+.form-success {
+  position: relative;
+  border-radius: 0;
+  border: 2px solid var(--fu-ink);
+  border-top: 7px solid var(--fu-ball);
+  box-shadow: 10px 10px 0 rgba(11,71,61,.13);
+}
+.registration-card::before {
+  content: "PLAYER / CARD";
+  position: absolute;
+  right: 18px;
+  top: 13px;
+  color: #8a9b93;
+  font-size: .58rem;
+  font-weight: 850;
+  letter-spacing: .13em;
+}
+.form-icon,
+.success-icon { border-radius: 0; background: var(--fu-ball); color: var(--fu-ink); }
+.avatar-upload,
+.registration-card input,
+.category-select,
+.registration-card .compact-radio label { border-radius: 0; }
+.register-submit { background: var(--fu-ink); }
+
+/* EXPLANATION = signature court sequence. */
+.how-section.court-story { padding-top: 124px; }
+.court-story .section-heading .eyebrow::before { content: "03 / "; color: var(--fu-ball); }
+.court-story .section-heading h2 { font-size: clamp(3.7rem, 6.2vw, 6.3rem); }
+.how-roster { border-top: 3px solid var(--fu-ball); }
+.how-roster-row span { border-radius: 0; }
+.court-process { border-radius: 0; border-width: 3px; box-shadow: 14px 14px 0 rgba(217,239,91,.08), inset 0 0 0 10px rgba(0,0,0,.08); }
+.court-step { border-left-width: 6px; box-shadow: 8px 8px 0 rgba(0,0,0,.16); }
+.court-step-icon { border-radius: 0; }
+.court-step-number { font-size: 3.1rem; }
+.court-process-ball { border-radius: 50%; }
+
+/* EXPLAIN THE MATCH = live ticket / fixture sheet. */
+.match-section { position: relative; overflow: hidden; }
+.match-section::before {
+  content: "04";
+  position: absolute;
+  right: 4%;
+  bottom: -95px;
+  color: rgba(217,239,91,.055);
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-size: 18rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.match-copy,
+.match-demo { position: relative; z-index: 1; }
+.match-copy .eyebrow::before { content: "04 / "; color: var(--fu-ball); }
+.match-copy h2 { font-size: clamp(3.5rem, 5.7vw, 5.7rem); }
+.match-demo {
+  border-radius: 0;
+  border: 2px solid var(--fu-ink);
+  box-shadow: 10px 10px 0 rgba(0,0,0,.25);
+}
+.demo-label { background: var(--fu-ball); color: var(--fu-ink); }
+.player-row { border-radius: 0; }
+.player-avatar { border-radius: 0; }
+.join-demo { background: var(--fu-ink); }
+
+/* CTA becomes a club sign, not a marketing band. */
+.final-cta {
+  position: relative;
+  overflow: hidden;
+  padding-block: 82px;
+  background: var(--fu-ball);
+  color: var(--fu-ink);
+  border-top: 0;
+}
+.final-cta::before {
+  content: "FALTA UNO";
+  position: absolute;
+  right: -14px;
+  bottom: -34px;
+  color: rgba(4,29,25,.075);
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-size: 10rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.final-cta > * { position: relative; z-index: 1; }
+.final-cta .eyebrow { color: rgba(4,29,25,.62); }
+.final-cta h2 { font-size: clamp(3rem, 5vw, 5rem); }
+.final-cta .primary-cta { background: var(--fu-ink); color: #fff; }
+
+/* Product area: carry the same identity, not a separate dashboard aesthetic. */
+.app-shell { position: relative; overflow-x: hidden; }
+.app-shell::before {
+  content: "MATCH CENTER";
+  position: fixed;
+  z-index: 0;
+  right: -25px;
+  bottom: -28px;
+  color: rgba(11,71,61,.035);
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-size: 9rem;
+  font-weight: 700;
+  pointer-events: none;
+}
+.app-header,
+.app-intro,
+.match-tabs { position: relative; z-index: 1; }
+.app-intro { border-bottom: 3px solid var(--fu-court); }
+.app-intro .eyebrow::before { content: "LIVE / "; color: var(--fu-court); }
+.app-intro h1 { font-size: clamp(4rem, 7vw, 6.8rem); }
+.match-tabs-list { border-bottom-width: 3px; }
+.match-tabs-list button { border-radius: 0; font-family: var(--font-display), "Arial Narrow", sans-serif; font-size: 1rem; letter-spacing: .01em; }
+.real-match-card { border-radius: 0; box-shadow: 7px 7px 0 rgba(11,71,61,.06); }
+.real-match-card.open { border-left: 7px solid var(--fu-ball); }
+.real-match-card.private { border-left: 7px solid #6470c5; }
+.real-match-card h3 { font-size: 1.75rem; }
+.spots-row > span,
+.mixed-teams > div { border-radius: 0; }
+.create-match-form,
+.availability-card,
+.create-help,
+.availability-help,
+.profile-dialog,
+.private-access-dialog,
+.login-required-dialog { border-radius: 0; }
+
+/* Auth = club access card. */
+.auth-card,
+.claim-card { border-radius: 0; border-top: 7px solid var(--fu-ball); box-shadow: 11px 11px 0 rgba(217,239,91,.11), 0 30px 80px rgba(0,0,0,.32); }
+.auth-card::before,
+.claim-card::before {
+  content: "FALTA UNO / ACCESS";
+  display: block;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #d7dfda;
+  color: #7a8a83;
+  font-size: .6rem;
+  font-weight: 850;
+  letter-spacing: .13em;
+}
+
+@media (max-width: 980px) {
+  .hero::after { display: none; }
+  .map-section-heading { grid-template-columns: 1fr; gap: 18px; }
+  .pain-strip > div { padding-left: 42px; }
+}
+
+@media (max-width: 700px) {
+  .hero-copy { padding-left: 17px; }
+  .hero-copy::before { width: 3px; height: 142px; }
+  .hero h1 { font-size: clamp(3.7rem, 18vw, 5.4rem); }
+  .active-matches-panel { box-shadow: 6px 6px 0 var(--fu-ball); }
+  .active-matches-panel::before { top: -22px; font-size: .8rem; }
+  .pain-strip > div { min-height: 84px; padding-left: 48px; }
+  .pain-strip > div::before { font-size: 2rem; }
+  .registration-section::before,
+  .match-section::before,
+  .final-cta::before { font-size: 8rem; }
+  .registration-copy h2,
+  .court-story .section-heading h2,
+  .map-section-heading h2,
+  .match-copy h2 { font-size: 3.4rem; }
+  .court-process { box-shadow: 7px 7px 0 rgba(217,239,91,.08); }
+  .app-intro h1 { font-size: 4.4rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; }
+}
