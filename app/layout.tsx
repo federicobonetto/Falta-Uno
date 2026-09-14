@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Barlow_Condensed, Manrope } from "next/font/google";
 import "./globals.css";
 import "./frontend-refresh.css";
+import "./frontend-court-v2.css";
 
 const displayFont = Barlow_Condensed({
   subsets: ["latin"],
