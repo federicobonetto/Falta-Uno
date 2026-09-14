@@ -1,5 +1,21 @@
 import type { Metadata } from "next";
+import { Barlow_Condensed, Manrope } from "next/font/google";
 import "./globals.css";
+import "./frontend-refresh.css";
+
+const displayFont = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const bodyFont = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-body",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Falta Uno | Encontrá jugadores de pádel",
@@ -16,5 +32,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="es"><body>{children}</body></html>;
+  return <html lang="es"><body className={`${bodyFont.variable} ${displayFont.variable}`}>{children}</body></html>;
 }
