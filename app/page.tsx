@@ -13,9 +13,9 @@ import { createSupabaseAdmin } from "@/lib/supabase/admin";
 export const dynamic = "force-dynamic";
 
 const steps = [
-  { number: "01", label: "Tu punto de partida", icon: UserRoundSearch, title: "Creá tu perfil", text: "Contanos tu categoría y cómo contactarte. Te lleva menos de un minuto." },
-  { number: "02", label: "Encontrá compatibilidad", icon: UsersRound, title: "Encontrá tu equipo", text: "Descubrí jugadores compatibles con tu nivel y disponibilidad." },
-  { number: "03", label: "Todo listo para jugar", icon: CalendarCheck2, title: "Armá el partido", text: "Completá los cuatro lugares, coordiná el horario y entrá a la cancha." },
+  { number: "01", label: "Tu punto de partida", icon: UserRoundSearch, title: "Decí cómo jugás", text: "Creá tu perfil con categoría, posición y ciudad para que los partidos tengan contexto real." },
+  { number: "02", label: "Encontrá compatibilidad", icon: UsersRound, title: "Mirá qué se está armando", text: "Explorá encuentros por zona, nivel y horario antes de decidir si querés sumarte." },
+  { number: "03", label: "Todo listo para jugar", icon: CalendarCheck2, title: "Completá la cancha", text: "Reservá tu lugar o publicá el que falta. Cuando son cuatro, hay partido." },
 ];
 
 export default async function Home() {
@@ -29,7 +29,7 @@ export default async function Home() {
           <a href="#como-funciona">Cómo funciona</a>
           <a href="#partidos-activos">Partidos activos</a>
           <a className="nav-login" href={accountHref} target="_top">{user ? <UserRound aria-hidden="true" /> : <LogIn aria-hidden="true" />}{user ? "Mi perfil" : "Iniciar sesión"}</a>
-          <a className="nav-cta" href="#registro">Registrarme <ArrowRight aria-hidden="true" /></a>
+          <a className="nav-cta" href="#registro">Crear perfil <ArrowRight aria-hidden="true" /></a>
         </nav>
       </header>
 
@@ -41,19 +41,19 @@ export default async function Home() {
         <div className="court-line court-line-one" /><div className="court-line court-line-two" />
         <div className="hero-content">
           <div className="hero-copy">
-            <p className="launch-pill"><span /> Comunidad de pádel en Olavarría</p>
-            <h1>Encontrá el jugador<br />que te falta.</h1>
-            <p className="hero-lead">Publicá un lugar libre o sumate a un partido cerca tuyo, con jugadores de nivel compatible y sin perseguir respuestas por WhatsApp.</p>
+            <p className="launch-pill"><span /> Comunidad de pádel · Olavarría</p>
+            <h1>Una cancha.<br />Cuatro jugadores.<br />Que no falte nadie.</h1>
+            <p className="hero-lead">Falta Uno conecta personas que quieren jugar con partidos que todavía tienen un lugar libre. Sin perseguir mensajes, sin listas eternas y sabiendo de antemano nivel, zona y horario.</p>
             <div className="hero-actions">
-              <a className="primary-cta" href="#partidos-activos">Ver partidos cerca mío <ArrowRight aria-hidden="true" /></a>
-              <a className="text-link" href={accountHref}><span className="play-dot"><Zap aria-hidden="true" /></span> Publicar un lugar libre</a>
+              <a className="primary-cta" href="#partidos-activos">Encontrar un partido <ArrowRight aria-hidden="true" /></a>
+              <a className="text-link" href={accountHref}><span className="play-dot"><Zap aria-hidden="true" /></span> Tengo un lugar libre</a>
             </div>
             <div className="hero-proof">
               <div className="avatar-stack" aria-hidden="true">
                 {[1, 2, 3].map((avatar) => <span className="photo-avatar" key={avatar}><img src={`/player-avatar-${avatar}.webp`} alt="" width="39" height="39" /></span>)}
                 <span className="more-avatar">+</span>
               </div>
-              <div><strong>{stats.players > 0 ? `${stats.players} jugadores ya se registraron` : "Sumate desde el comienzo"}</strong><small>Gratis · Tu teléfono nunca se publica</small></div>
+              <div><strong>{stats.players > 0 ? `${stats.players} jugadores ya están adentro` : "La primera comunidad se está formando"}</strong><small>Gratis · Tu teléfono nunca se publica</small></div>
             </div>
           </div>
           <div className="hero-form-wrap"><ActiveMatchesPreview signedIn={Boolean(user)} canCreate={Boolean(player)} /></div>
@@ -61,28 +61,28 @@ export default async function Home() {
       </section>
 
       <section className="pain-strip" aria-label="Beneficios principales">
-        <div><Clock3 aria-hidden="true" /><span><strong>Publicá en 1 minuto</strong><small>Horario, club, nivel y lugares</small></span></div>
-        <div><Target aria-hidden="true" /><span><strong>Nivel compatible</strong><small>Sin sorpresas antes de jugar</small></span></div>
-        <div><BellRing aria-hidden="true" /><span><strong>Partidos que se completan</strong><small>{stats.matches > 0 ? `${stats.matches} partidos creados por la comunidad` : "La comunidad empieza en Olavarría"}</small></span></div>
+        <div><Clock3 aria-hidden="true" /><span><strong>Publicar lleva un minuto</strong><small>Horario, club, categoría y lugares</small></span></div>
+        <div><Target aria-hidden="true" /><span><strong>Sabés con quién jugás</strong><small>Nivel y contexto antes de anotarte</small></span></div>
+        <div><BellRing aria-hidden="true" /><span><strong>Menos grupos, más cancha</strong><small>{stats.matches > 0 ? `${stats.matches} partidos creados por la comunidad` : "La comunidad empieza en Olavarría"}</small></span></div>
       </section>
 
       <NearbyMap signedIn={Boolean(user)} />
 
       <section className="registration-section">
         <div className="registration-copy">
-          <p className="eyebrow green">Tu perfil de jugador</p>
-          <h2>Decí cuándo querés jugar.<br />Nosotros acercamos el partido.</h2>
-          <p>Creá tu perfil en dos pasos para anotarte en partidos, recibir invitaciones y encontrar jugadores sin depender de una lista interminable de contactos.</p>
-          <ul><li><Check /> Perfil gratuito en menos de un minuto</li><li><Check /> Teléfono privado y protegido</li><li><Check /> Partidos filtrados por categoría y ciudad</li></ul>
+          <p className="eyebrow green">Tu ficha de jugador</p>
+          <h2>Una vez registrado,<br />ya sabés dónde mirar.</h2>
+          <p>Cargá lo justo para que otro jugador entienda si sos compatible: categoría, posición, ciudad y disponibilidad. El resto queda protegido.</p>
+          <ul><li><Check /> Perfil gratuito y simple</li><li><Check /> Teléfono privado</li><li><Check /> Partidos filtrados por nivel y zona</li></ul>
         </div>
         <div className="registration-section-form"><RegistrationForm signedIn={Boolean(user)} /></div>
       </section>
 
       <section className="how-section" id="como-funciona">
         <div className="section-heading">
-          <p className="eyebrow green">Simple de verdad</p>
-          <h2>De “falta uno” a partido armado.</h2>
-          <p>Sin llamadas, sin cadenas de mensajes y sin perder media tarde coordinando.</p>
+          <p className="eyebrow green">Tres movimientos</p>
+          <h2>De “falta uno” a “somos cuatro”.</h2>
+          <p>La idea es simple: mostrar la demanda real de juego y hacer visible el lugar que todavía está libre.</p>
         </div>
         <div className="steps-grid">
           {steps.map((step) => {
@@ -100,51 +100,51 @@ export default async function Home() {
 
       <section className="match-section" id="partido">
         <div className="match-copy">
-          <p className="eyebrow green">Así de fácil</p>
-          <h2>Un lugar libre.<br /><span>La persona indicada.</span></h2>
-          <p>Creás un partido, definís categoría, zona y horario. Falta Uno se ocupa de mostrarlo a jugadores compatibles.</p>
+          <p className="eyebrow green">La información que importa</p>
+          <h2>Antes de anotarte,<br /><span>ya sabés qué partido es.</span></h2>
+          <p>Cada encuentro muestra lo necesario para decidir rápido: quién organiza, cuándo se juega, dónde, qué categoría busca y cuántos lugares quedan.</p>
           <ul>
-            <li><Check aria-hidden="true" /> Jugadores de categoría similar</li>
-            <li><Check aria-hidden="true" /> Información clara antes de sumarte</li>
-            <li><Check aria-hidden="true" /> Contacto sólo cuando hay partido</li>
+            <li><Check aria-hidden="true" /> Nivel visible antes de sumarte</li>
+            <li><Check aria-hidden="true" /> Club y horario definidos</li>
+            <li><Check aria-hidden="true" /> Lugares actualizados con cada inscripción</li>
           </ul>
-          <a className="secondary-cta" href="#registro">Quiero ser de los primeros <ArrowRight aria-hidden="true" /></a>
+          <a className="secondary-cta" href="#registro">Crear mi ficha de jugador <ArrowRight aria-hidden="true" /></a>
         </div>
 
         <div className="match-demo" aria-label="Información necesaria para armar un partido">
-          <div className="demo-topbar"><div><span className="live-dot" /> Partido abierto</div><span className="demo-label">DATOS CLAROS</span></div>
+          <div className="demo-topbar"><div><span className="live-dot" /> Partido abierto</div><span className="demo-label">Listo para completar</span></div>
           <div className="demo-title-row">
-            <div><small>DÍA</small><strong>Horario</strong></div>
+            <div><small>Día</small><strong>Horario</strong></div>
             <div className="demo-meta"><span><MapPin aria-hidden="true" /> Club y ciudad</span><span><Target aria-hidden="true" /> Categoría</span></div>
           </div>
           <div className="player-list">
-            <div className="player-row"><span className="player-avatar lime"><UsersRound /></span><span><strong>Jugadores confirmados</strong><small>Solo perfiles reales registrados</small></span><ShieldCheck aria-label="Perfiles verificados" /></div>
+            <div className="player-row"><span className="player-avatar lime"><UsersRound /></span><span><strong>Jugadores confirmados</strong><small>Perfiles reales registrados</small></span><ShieldCheck aria-label="Perfiles verificados" /></div>
             <div className="player-row"><span className="player-avatar blue"><Target /></span><span><strong>Nivel compatible</strong><small>Categoría visible antes de anotarte</small></span><ShieldCheck aria-label="Información verificada" /></div>
-            <div className="player-row"><span className="player-avatar orange"><MapPin /></span><span><strong>Ubicación definida</strong><small>Sabés dónde se juega antes de sumarte</small></span><ShieldCheck aria-label="Información verificada" /></div>
+            <div className="player-row"><span className="player-avatar orange"><MapPin /></span><span><strong>Lugar definido</strong><small>Sabés dónde vas antes de sumarte</small></span><ShieldCheck aria-label="Información verificada" /></div>
             <div className="player-row open-slot">
               <span className="player-avatar empty"><Sparkles aria-hidden="true" /></span>
-              <span><strong>Lugares disponibles</strong><small>Se actualizan con cada inscripción real</small></span>
+              <span><strong>Ese lugar puede ser tuyo</strong><small>Si encaja con vos, te anotás desde acá</small></span>
               <ArrowRight aria-hidden="true" />
             </div>
           </div>
-          <a href="/partidos" className="join-demo"><MessageCircleMore aria-hidden="true" /> Quiero sumarme</a>
+          <a href="/partidos" className="join-demo"><MessageCircleMore aria-hidden="true" /> Ver partidos reales</a>
         </div>
       </section>
 
       <section className="final-cta">
-        <div><p className="eyebrow">La comunidad empieza con vos</p><h2>Tu próximo partido está más cerca.</h2></div>
-        <a className="primary-cta" href="#registro">Crear mi perfil gratis <ArrowRight aria-hidden="true" /></a>
+        <div><p className="eyebrow">El partido existe cuando aparecen los cuatro</p><h2>Entrá a la comunidad y hacé visible que querés jugar.</h2></div>
+        <a className="primary-cta" href="#registro">Crear mi perfil <ArrowRight aria-hidden="true" /></a>
       </section>
 
       <section className="trust-strip" aria-label="Confianza y privacidad">
-        <div><ShieldCheck /><span><strong>Hecho en Olavarría</strong><small>Una herramienta local para que ningún turno se caiga por falta de jugadores.</small></span></div>
-        <div><BellRing /><span><strong>Contacto sólo cuando importa</strong><small>Usamos tus datos para el perfil y las comunicaciones relacionadas con tus partidos.</small></span></div>
-        <div><UserRound /><span><strong>Vos tenés el control</strong><small>Tu teléfono no se muestra públicamente y podés administrar tus encuentros.</small></span></div>
+        <div><ShieldCheck /><span><strong>Hecho para jugar acá</strong><small>Arranca en Olavarría con una lógica pensada para la forma en que se organizan los partidos locales.</small></span></div>
+        <div><BellRing /><span><strong>Contacto cuando tiene sentido</strong><small>Usamos tus datos para tu perfil y comunicaciones relacionadas con partidos.</small></span></div>
+        <div><UserRound /><span><strong>Tu teléfono no es público</strong><small>Otros jugadores ven lo necesario para jugar, no tus datos personales.</small></span></div>
       </section>
 
       <footer>
         <BrandLogo href="#inicio" />
-        <p>Jugá más. Organizá menos.</p><small>Primera etapa · Comunidad de pádel</small>
+        <p>Jugá más. Organizá menos.</p><small>Comunidad de pádel · Olavarría</small>
       </footer>
     </main>
   );
